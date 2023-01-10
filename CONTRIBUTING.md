@@ -7,7 +7,7 @@ helps, and credit will always be given.
 
 ### Report Bugs
 
-If you are reporting a bug, please include:
+If you are reporting a bug, please first check if there is already an open issue for the bug. If there is, please add your comments to the issue to minimize redundancy. Otherwise, please include the following information when reporting the bug:
 
 * Your operating system name and version.
 * Any details about your local setup that might be helpful in troubleshooting.
