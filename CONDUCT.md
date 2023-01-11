@@ -1,5 +1,8 @@
 # Code of Conduct
 
+This project is created by students in Group 9 - Block 4 from the Master of Data Science program to fullfil the requirements of course DSCI524. The project will adhere the code of conduct proposed by University of British Columbia.
+
+
 ## Our Pledge
 
 In the interest of fostering an open and welcoming environment, we as contributors and maintainers pledge to making participation in our project and our community a harassment-free experience for everyone, regardless of age, body size, disability, ethnicity, gender identity and expression, level of experience, nationality, personal appearance, race, religion, or sexual identity and orientation.
@@ -21,6 +24,8 @@ Examples of unacceptable behavior by participants include:
 * Public or private harassment
 * Publishing others' private information, such as a physical or electronic address, without explicit permission
 * Other conduct which could reasonably be considered inappropriate in a professional setting
+
+Failing to meet the code of conduct will not be tolerated and members who violated the code of conduct will be asked to stop inappropriate behavior immediately. If the failure continues the member will receive a warning, a ban of access of this project or being reported to the university. 
 
 ## Our Responsibilities
 
