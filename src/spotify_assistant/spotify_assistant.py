@@ -46,6 +46,20 @@ class User:
         """
         pass
 
+    
+    def get_users_top_genres(self):
+        """Finds the top 5 genres from a user's saved tracks
+
+        Returns
+        -------
+        List
+            A list of the top 5 genres that a user likes
+
+        Examples
+        --------
+        >>> User.get_users_top_genres()
+        """
+        pass
     def get_playlists_songs(self, playlists = None):
         """Gets all of the song titles within a user's owned and followed playlists
 
