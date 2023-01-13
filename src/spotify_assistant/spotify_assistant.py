@@ -47,11 +47,11 @@ class User:
         """
         pass
 
-    def get_playlists_songs(self, playlists = 'all'):
+    def get_playlists_songs(self, playlists = None):
         """Gets all of the song titles within a user's owned and followed playlists
 
         Playlists from which to retrieve songs can be specified by name as a list,
-        but by default all songs from all playlists will be retrieved.
+        but by default all songs from all of a user's owned and followed playlists will be retrieved.
 
         Parameters
         ----------
@@ -68,6 +68,6 @@ class User:
         --------
         >>> credentials = {}
         >>> Caroline = User(credentials)
-        >>> Caroline.get_all_playlists_songs()
+        >>> Caroline.get_playlists_songs()
         """
         return None
