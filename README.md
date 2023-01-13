@@ -2,6 +2,14 @@
 
 A package that makes spotify users' lives easier!
 
+## Authors
+- Caroline Tang
+- Chester Wang
+- Jenit Jain
+- Julie Song
+
+This package was originally created as part of the requirements of DSCI524 (Collaborative Software Development), a course in the Master of Data Science program at the University of British Columbia. All original members of this project abided by the [Code of Conduct](CONDUCT.md).
+
 ## Installation
 
 ```bash
@@ -14,7 +22,7 @@ $ pip install spotify_assistant
 
 ## Contributing
 
-Interested in contributing? Check out the contributing guidelines. Please note that this project is released with a Code of Conduct. By contributing to this project, you agree to abide by its terms.
+Interested in contributing? Check out the [contributing guidelines](CONTRIBUTING.md). Please note that this project is released with a [Code of Conduct](CONDUCT.md). By contributing to this project, you agree to abide by its terms.
 
 ## License
 
