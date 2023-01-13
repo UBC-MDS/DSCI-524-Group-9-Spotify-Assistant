@@ -1,6 +1,7 @@
 import json
 import requests
 import base64
+from datetime import date
 
 class User:
 
@@ -60,6 +61,8 @@ class User:
         >>> User.get_users_top_genres()
         """
         pass
+    
+    
     def get_playlists_songs(self, playlists = None):
         """Gets all of the song titles within a user's owned and followed playlists
 
@@ -84,3 +87,24 @@ class User:
         >>> Caroline.get_playlists_songs()
         """
         return None
+    
+    
+    def get_song_recommendations(self, playlist_name = None, num_songs = 10):
+        """Creates a playlist containing recommended songs based on the user's top 3 artists.
+        
+        Prints a url link to the new playlist on Spotify.
+        
+        Parameters
+        ----------
+        playlist_name : str
+            The name of the newly created playlist. Defaults to 'Recommended Songs'
+            with the current date (i.e. "2023-01-14 Recommended Songs").
+        
+        num_songs : int
+            The number of songs to recommend.
+        
+        Examples
+        --------
+        >>> User.get_song_recommendations("Recommended Songs")
+        """
+        pass
