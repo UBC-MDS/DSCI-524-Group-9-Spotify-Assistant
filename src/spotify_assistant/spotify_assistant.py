@@ -42,8 +42,7 @@ class User:
 
         Examples
         --------
-        >>> Chester = User()
-        >>> Chester.get_new_releases_by_continent("Asia")
+        >>> User.get_new_releases_by_continent("Asia")
         """
         pass
 
