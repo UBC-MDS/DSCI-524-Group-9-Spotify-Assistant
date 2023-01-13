@@ -105,6 +105,8 @@ class User:
         
         Examples
         --------
-        >>> User.get_song_recommendations("Recommended Songs")
+        >>> credentials = {}
+        >>> RandomUser = User(credentials)
+        >>> RandomUser.get_song_recommendations("Recommended Songs")
         """
         pass
