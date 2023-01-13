@@ -60,3 +60,27 @@ class User:
         >>> User.get_users_top_genres()
         """
         pass
+    def get_playlists_songs(self, playlists = None):
+        """Gets all of the song titles within a user's owned and followed playlists
+
+        Playlists from which to retrieve songs can be specified by name as a list,
+        but by default all songs from all of a user's owned and followed playlists will be retrieved.
+
+        Parameters
+        ----------
+        playlists : list
+            list of playlist names (strings) to get songs from, defaults to all
+
+        Returns
+        -------
+        dict
+            A dictionary with the names of playlists as keys, 
+            and a list of song titles contained in the playlist as values
+        
+        Examples
+        --------
+        >>> credentials = {}
+        >>> Caroline = User(credentials)
+        >>> Caroline.get_playlists_songs()
+        """
+        return None
