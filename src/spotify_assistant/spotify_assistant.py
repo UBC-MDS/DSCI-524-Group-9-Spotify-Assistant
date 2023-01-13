@@ -45,3 +45,18 @@ class User:
         >>> User.get_new_releases_by_continent("Asia")
         """
         pass
+
+    
+    def get_users_top_genres(self):
+        """Finds the top 5 genres from a user's saved tracks
+
+        Returns
+        -------
+        List
+            A list of the top 5 genres that a user likes
+
+        Examples
+        --------
+        >>> User.get_users_top_genres()
+        """
+        pass
