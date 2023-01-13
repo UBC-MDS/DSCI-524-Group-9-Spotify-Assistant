@@ -2,6 +2,8 @@
 
 A Python package that enriches spotify users' music experience by allowing them to explore their listening trends via REST APIs implemented for Spotify developers.
 
+There is one similar Python package, [Spotipy](https://github.com/spotipy-dev/spotipy) that provides wrapper functions in Python for the Spotify API. This package contains a function for each possible API request, but does not combine any of these requests. Our aim is to create functions that combine multiple requests and provide additional insights for Spotify users. However, as there is no R equivalent of the `Spotipy` package, we plan to create `spotify_assistant` without any dependency on `Spotipy`.
+
 ## Authors
 - Caroline Tang
 - Chester Wang
