@@ -1,6 +1,6 @@
 # spotify_assistant
 
-A package that makes spotify users' lives easier!
+A Python package that enriches spotify users' music experience by allowing them to explore their listening trends via REST APIs implemented for Spotify developers.
 
 ## Authors
 - Caroline Tang
@@ -19,6 +19,13 @@ $ pip install spotify_assistant
 ## Usage
 
 - TODO
+
+## Functions
+
+- `get_users_top_genres()`: Returns the top 5 genres of music that a user listens to and has saved in the "Your Music" library.
+- `create_playlsit()`: Creates a playlist of recommended songs based on user’s top artists.
+- `get_playlists_songs(playlists)`: Returns the songs saved in all the playlists, which are passed as a list to the function.
+- `get_new_releases_by_continent(continent)`: Returns the new releases by continent
 
 ## Contributing
 
