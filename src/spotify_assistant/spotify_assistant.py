@@ -57,9 +57,12 @@ class User:
 
         Examples
         --------
-        >>> User.get_users_top_genres()
+        >>> credentials = {}
+        >>> RandomUser = User(credentials)
+        >>> RandomUser.get_users_top_genres()
         """
         pass
+    
     def get_playlists_songs(self, playlists = None):
         """Gets all of the song titles within a user's owned and followed playlists
 
