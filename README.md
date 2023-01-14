@@ -2,6 +2,8 @@
 
 A Python package that enriches spotify users' music experience by allowing them to explore their listening trends via REST APIs implemented for Spotify developers.
 
+There is one similar Python package, [Spotipy](https://github.com/spotipy-dev/spotipy) that provides wrapper functions in Python for the Spotify API. This package contains a function for each possible API request, but does not combine any of these requests. Our aim is to create functions that combine multiple requests and provide additional insights for Spotify users. However, as there is no R equivalent of the `Spotipy` package, we plan to create `spotify_assistant` without any dependency on `Spotipy`.
+
 ## Authors
 - Caroline Tang
 - Chester Wang
@@ -23,7 +25,7 @@ $ pip install spotify_assistant
 ## Functions
 
 - `get_users_top_genres()`: Returns the top 5 genres of music that a user listens to and has saved in the "Your Music" library.
-- `create_playlsit()`: Creates a playlist of recommended songs based on user’s top artists.
+- `get_song_recommendations(playlist_name, num_songs)`: Creates a playlist of recommended songs based on user’s top 3 artists.
 - `get_playlists_songs(playlists)`: Returns the songs saved in all the playlists, which are passed as a list to the function.
 - `get_new_releases_by_continent(continent)`: Returns the new releases by continent
 
