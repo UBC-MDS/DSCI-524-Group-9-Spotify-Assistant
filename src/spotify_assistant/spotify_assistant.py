@@ -1,28 +1,22 @@
 import json
 import requests
-import base64
 from datetime import date
+from collections import Counter
+from connector import get_access_token
 
 class User:
 
     def __init__(self, client_credentials):
-        auth_header = base64.b64encode(f"{client_credentials['client_id']}:{client_credentials['client_secret']}".encode())
-
-        # Make a request to the Spotify token endpoint to get an access token
-        token_response = requests.post('https://accounts.spotify.com/api/token',
-                                       headers={
-                                            'Authorization': f'Basic {auth_header.decode()}',
-                                            'Content-Type': 'application/x-www-form-urlencoded'},
-                                        data={'grant_type': 'client_credentials'},
-                                        timeout=60)
-
-        # Extract the access token from the response
-        self.access_token = token_response.json()['access_token']
+        
+        access_token = get_access_token(client_credentials)
+        
+        self.user_headers = {
+            "Authorization": "Bearer " + access_token,
+            "Content-Type": "application/json"
+        }
 
         #Example usage
-        # playlists_response = requests.get('https://api.spotify.com/v1/me/playlists', headers={
-        #     'Authorization': f'Bearer {access_token}',
-        # })
+        # playlists_response = requests.get('https://api.spotify.com/v1/me/playlists', headers=self.user_headers)
 
 
     def get_new_releases_by_continent(continent: str):
@@ -62,8 +56,22 @@ class User:
         >>> RandomUser = User(credentials)
         >>> RandomUser.get_users_top_genres()
         """
-        pass
-    
+        genre_count = Counter()
+        artists = set()
+        user_tracks_response = requests.get("https://api.spotify.com/v1/me/tracks", headers=self.user_headers, timeout=60).json()
+        
+        for track in user_tracks_response['items']:
+            for artist in track['track']['artists']:
+                artists.add(artist['id'])
+        
+        for artist in list(artists):
+            artist_info = requests.get(f"https://api.spotify.com/v1/artists/{artist}", headers=self.user_headers, timeout=60).json()
+            if 'genres' in artist_info:
+                for genre in artist_info['genres']:
+                    genre_count[genre] += 1
+            
+        genres = [genre[0] for genre in genre_count.most_common(5)]
+        return genres
 
     def get_playlists_songs(self, playlists = None):
         """Gets all of the song titles within a user's owned and followed playlists
