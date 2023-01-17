@@ -57,9 +57,10 @@ class User:
             if(row['alpha-2'] == 'AQ'): continue
             cc_map[row['region']].append(row['alpha-2'])
 
+        assert limit > 0
+        assert continent in cc_map
 
         print("-- Loading new releases in {}, this may take a while...".format(continent))
-        assert continent in cc_map
 
         data = []
         for country_code in cc_map[continent]:
