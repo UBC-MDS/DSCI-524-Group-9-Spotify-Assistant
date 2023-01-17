@@ -147,8 +147,15 @@ class User:
             if (playlists):
                 if response['name'] in playlists:
                     playlists_output[response['name']] = {'id': response['id'], 'songs': []}
+                else:
+                    continue
             else:
                 playlists_output[response['name']] = {'id': response['id'], 'songs': []}
+        
+        # return empty dictionary if no playlists were added
+        if len(playlists_output) == 0:
+            print('No playlists were found')
+            return playlists_output
         
         # get songs from each playlist
         for playlist in playlists_output:
