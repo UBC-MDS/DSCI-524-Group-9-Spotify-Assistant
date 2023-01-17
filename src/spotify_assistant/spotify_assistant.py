@@ -6,10 +6,10 @@ from connector import get_access_token
 
 class User:
 
-    def __init__(self, client_credentials):
-        
-        access_token = get_access_token(client_credentials)
-        
+    def __init__(self, client_credentials=None):
+
+        access_token = get_access_token(client_credentials=None)
+
         self.user_headers = {
             "Authorization": "Bearer " + access_token,
             "Content-Type": "application/json"
@@ -23,7 +23,7 @@ class User:
         """Gets the new releases by continent
 
         Usually the style of music from the same continent are similar,
-        and this helps users find and explore songs similar to their taste. 
+        and this helps users find and explore songs similar to their taste.
 
         Parameters
         ----------
@@ -41,7 +41,7 @@ class User:
         """
         pass
 
-    
+
     def get_users_top_genres(self):
         """Finds the top 5 genres from a user's saved tracks
 
@@ -59,17 +59,17 @@ class User:
         genre_count = Counter()
         artists = set()
         user_tracks_response = requests.get("https://api.spotify.com/v1/me/tracks", headers=self.user_headers, timeout=60).json()
-        
+
         for track in user_tracks_response['items']:
             for artist in track['track']['artists']:
                 artists.add(artist['id'])
-        
+
         for artist in list(artists):
             artist_info = requests.get(f"https://api.spotify.com/v1/artists/{artist}", headers=self.user_headers, timeout=60).json()
             if 'genres' in artist_info:
                 for genre in artist_info['genres']:
                     genre_count[genre] += 1
-            
+
         genres = [genre[0] for genre in genre_count.most_common(5)]
         return genres
 
@@ -87,9 +87,9 @@ class User:
         Returns
         -------
         dict
-            A dictionary with the names of playlists as keys, 
+            A dictionary with the names of playlists as keys,
             and a list of song titles contained in the playlist as values
-        
+
         Examples
         --------
         >>> credentials = {}
@@ -97,22 +97,22 @@ class User:
         >>> Caroline.get_playlists_songs()
         """
         return None
-    
-    
+
+
     def get_song_recommendations(self, playlist_name = None, num_songs = 10):
         """Creates a playlist containing recommended songs based on the user's top 3 artists.
-        
+
         Prints a url link to the new playlist on Spotify.
-        
+
         Parameters
         ----------
         playlist_name : str
             The name of the newly created playlist. Defaults to 'Recommended Songs'
             with the current date (i.e. "2023-01-14 Recommended Songs").
-        
+
         num_songs : int
             The number of songs to recommend.
-        
+
         Examples
         --------
         >>> credentials = {}
