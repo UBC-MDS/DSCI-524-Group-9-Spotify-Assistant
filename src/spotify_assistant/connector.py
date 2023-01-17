@@ -5,7 +5,7 @@ try:
     import config
 except:
     print("-- WARNING: Config.py file not found. Pass in a dict with id and secret instead.")
-    
+
 from urllib.parse import urlencode
 
 def get_access_token(client_credentials=None):
@@ -61,4 +61,4 @@ def get_access_token(client_credentials=None):
     r = requests.post(url, headers=headers, data=data, timeout=60)
 
     token = r.json()['access_token']
-    return r
+    return token
