@@ -134,8 +134,11 @@ class User:
         >>> Caroline = User(credentials)
         >>> Caroline.get_playlists_songs()
         """
-        
-        #request a user's playlists
+        # check valid playlists argument
+        if not (playlists is None or isinstance(playlists, list)):
+            raise TypeError('playlists must be of type None or list')
+
+        # request a user's playlists
         playlists_output = {}
         user_playlists = requests.get("https://api.spotify.com/v1/me/playlists", headers=self.user_headers, timeout=60).json()
 
