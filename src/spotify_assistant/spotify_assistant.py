@@ -2,16 +2,25 @@ import json
 import requests
 from datetime import date
 from collections import Counter
-from connector import get_access_token
+from connector import get_access_token, get_no_access_token
+import pandas as pd
+from collections import defaultdict
+
 
 class User:
 
     def __init__(self, client_credentials=None):
 
-        access_token = get_access_token(client_credentials=None)
+        access_token = get_access_token(client_credentials=client_credentials)
+        no_access_token = get_no_access_token(client_credentials=client_credentials)
 
         self.user_headers = {
             "Authorization": "Bearer " + access_token,
+            "Content-Type": "application/json"
+        }
+
+        self.user_headers_no_access = {
+            "Authorization": "Bearer " + no_access_token,
             "Content-Type": "application/json"
         }
 
@@ -19,7 +28,7 @@ class User:
         # playlists_response = requests.get('https://api.spotify.com/v1/me/playlists', headers=self.user_headers)
 
 
-    def get_new_releases_by_continent(continent: str):
+    def get_new_releases_by_continent(self, continent: str, limit: int = 5):
         """Gets the new releases by continent
 
         Usually the style of music from the same continent are similar,
@@ -39,7 +48,35 @@ class User:
         --------
         >>> User.get_new_releases_by_continent("Asia")
         """
-        pass
+
+        df = pd.read_csv("https://raw.githubusercontent.com/lukes/ISO-3166-Countries-with-Regional-Codes/master/all/all.csv")
+        cc_map = defaultdict(list)
+        df = df.reset_index()  # make sure indexes pair with number of rows
+
+        for index, row in df.iterrows():
+            if(row['alpha-2'] == 'AQ'): continue
+            cc_map[row['region']].append(row['alpha-2'])
+
+
+        print("-- Loading new releases in {}, this may take a while...".format(continent))
+        assert continent in cc_map
+
+        data = []
+        for country_code in cc_map[continent]:
+
+            url = "https://api.spotify.com/v1/browse/new-releases?country={}".format(country_code)
+            r = requests.get(url, headers=self.user_headers_no_access, timeout=60)
+
+            if(r.status_code != 200): continue # Skipping some countries that cannot use spotify
+
+            new_releases = r.json()
+            for item in new_releases['albums']['items']:
+                album_name = item['name']
+                artist_list = [x['name'] for x in item['artists']]
+                data.append("{}, produced by {}".format(album_name, ",".join(artist_list)))
+
+        return data[:limit]
+
 
 
     def get_users_top_genres(self):
