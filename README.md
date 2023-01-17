@@ -27,7 +27,7 @@ $ pip install spotify_assistant
 - `get_users_top_genres()`: Returns the top 5 genres of music that a user listens to and has saved in the "Your Music" library.
 - `get_song_recommendations(playlist_name, num_songs)`: Creates a playlist of recommended songs based on user’s top 3 artists.
 - `get_playlists_songs(playlists)`: Returns the songs saved in all the playlists, which are passed as a list to the function.
-- `get_new_releases_by_continent(continent)`: Returns the new releases by continent
+- `get_new_releases_by_continent(continent, limit)`: Returns the new releases by continent
 
 ## Contributing
 
