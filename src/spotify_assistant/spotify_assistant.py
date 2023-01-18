@@ -134,7 +134,37 @@ class User:
         >>> Caroline = User(credentials)
         >>> Caroline.get_playlists_songs()
         """
-        return None
+        # check valid playlists argument
+        if not (playlists is None or isinstance(playlists, list)):
+            raise TypeError('playlists must be a list or None')
+
+        # request a user's playlists
+        playlists_output = {}
+        user_playlists = requests.get("https://api.spotify.com/v1/me/playlists", headers=self.user_headers, timeout=60).json()
+
+        # create dictionary where each key is a playlist name
+        for response in user_playlists['items']:
+            if (playlists):
+                if response['name'] in playlists:
+                    playlists_output[response['name']] = {'id': response['id'], 'songs': []}
+                else:
+                    continue
+            else:
+                playlists_output[response['name']] = {'id': response['id'], 'songs': []}
+        
+        # return empty dictionary if no playlists were added
+        if len(playlists_output) == 0:
+            print('No playlists were found')
+            return playlists_output
+        
+        # get songs from each playlist
+        for playlist in playlists_output:
+            playlist_songs = requests.get(f"https://api.spotify.com/v1/playlists/{playlists_output[playlist]['id']}/tracks", headers=self.user_headers, timeout=60).json()
+            for song in playlist_songs['items']:
+                playlists_output[playlist]['songs'].append(song['track']['name'])
+
+        return playlists_output
+        
 
 
     def get_song_recommendations(self, playlist_name = None, num_songs = 10):
