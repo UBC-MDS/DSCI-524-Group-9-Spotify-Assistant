@@ -204,7 +204,16 @@ class User:
         for response in rec_songs['tracks']:
             new_songs.add(response['uri'])
         
+        # Create a new playlist to put the new songs in
+        possible_name = input("Please enter a name for the new playlist: ")
+        if possible_name:
+            playlist_name = possible_name
+        else:
+            playlist_name = f"{pd.to_datetime('today').date()} Recommended Songs"
+            
+        new_playlist = requests.post(f"https://api.spotify.com/v1/users/{user_id}/playlists?name={playlist_name}", headers=self.user_headers, timeout=60).json()
         
+        playlist_url = new_playlist['external_urls']['spotify']
        
         
         
