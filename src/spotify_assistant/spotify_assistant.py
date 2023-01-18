@@ -192,6 +192,19 @@ class User:
         # Get user's top 3 artists with their artist id information
         user_artists = requests.get("https://api.spotify.com/v1/me/top/artists?limit=3", headers=self.user_headers, timeout=60).json()
         
+        # Assuming within items we have artist name and id as fields
+        for response in user_artists['items']:
+            top_artists.add(response['id'])
+        
+        top_artists = list(top_artists)
+        
+        # Get recommended song uri's
+        rec_songs = requests.get(f"https://api.spotify.com/v1/recommendations?seed_artists={top_artists}", headers=self.user_headers, timeout=60).json()
+        
+        for response in rec_songs['tracks']:
+            new_songs.add(response['uri'])
+        
+        
        
         
         
