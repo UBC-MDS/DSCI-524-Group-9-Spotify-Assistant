@@ -134,37 +134,8 @@ class User:
         >>> Caroline = User(credentials)
         >>> Caroline.get_playlists_songs()
         """
-        #return None
-        # check valid playlists argument
-        if not (playlists is None or isinstance(playlists, list)):
-            raise TypeError('playlists must be a list or None')
-
-        # request a user's playlists
-        playlists_output = {}
-        user_playlists = requests.get("https://api.spotify.com/v1/me/playlists", headers=self.user_headers, timeout=60).json()
-
-        # create dictionary where each key is a playlist name
-        for response in user_playlists['items']:
-            if (playlists):
-                if response['name'] in playlists:
-                    playlists_output[response['name']] = {'id': response['id'], 'songs': []}
-                else:
-                    continue
-            else:
-                playlists_output[response['name']] = {'id': response['id'], 'songs': []}
+        return None
         
-        # return empty dictionary if no playlists were added
-        if len(playlists_output) == 0:
-            print('No playlists were found')
-            return playlists_output
-        
-        # get songs from each playlist
-        for playlist in playlists_output:
-            playlist_songs = requests.get(f"https://api.spotify.com/v1/playlists/{playlists_output[playlist]['id']}/tracks", headers=self.user_headers, timeout=60).json()
-            for song in playlist_songs['items']:
-                playlists_output[playlist]['songs'].append(song['track']['name'])
-
-        return playlists_output
 
 
     def get_song_recommendations(self, playlist_name = None, num_songs = 10):
@@ -188,7 +159,7 @@ class User:
         >>> RandomUser.get_song_recommendations("Recommended Songs")
         """
         top_artists = set()
-        new_songs = set()
+        new_songs = []
         # Get user's top 3 artists with their artist id information
         user_artists = requests.get("https://api.spotify.com/v1/me/top/artists?limit=3", headers=self.user_headers, timeout=60).json()
         
@@ -198,24 +169,30 @@ class User:
         
         top_artists = list(top_artists)
         
-        # Get recommended song uri's
-        rec_songs = requests.get(f"https://api.spotify.com/v1/recommendations?seed_artists={top_artists}", headers=self.user_headers, timeout=60).json()
+        # Get 5 recommended song uri's
+        rec_songs = requests.get(f"https://api.spotify.com/v1/recommendations?seed_artists={top_artists}&limit={num_songs}",
+                                 headers=self.user_headers, timeout=60).json()
         
         for response in rec_songs['tracks']:
-            new_songs.add(response['uri'])
+            new_songs.append(response['uri'])
         
         # Create a new playlist to put the new songs in
         possible_name = input("Please enter a name for the new playlist: ")
-        if possible_name:
-            playlist_name = possible_name
+        if playlist_name:
+            pass
         else:
             playlist_name = f"{pd.to_datetime('today').date()} Recommended Songs"
             
-        new_playlist = requests.post(f"https://api.spotify.com/v1/users/{user_id}/playlists?name={playlist_name}", headers=self.user_headers, timeout=60).json()
+        new_playlist = requests.post(f"https://api.spotify.com/v1/users/{user_id}/playlists?name={playlist_name}", 
+                                     headers=self.user_headers, timeout=60).json()
         
         playlist_url = new_playlist['external_urls']['spotify']
+        playlist_id = new_playlist['id'] 
        
+        # Adding recommended songs to playlist
+        for uri in range(len(new_songs)):
+            new_songs[uri] = f"spotify:track:{new_songs[uri]}"
+        add_songs = requests.post(f"https://api.spotify.com/v1/playlists/{playlist_id}/tracks?uris={new_songs}", 
+                                  headers=self.user_headers, timeout=60).json()
         
-        
-        
-        
+        print(f"Here is a link to the new playlist: {playlist_url}")
