@@ -136,7 +136,7 @@ class User:
         """
         # check valid playlists argument
         if not (playlists is None or isinstance(playlists, list)):
-            raise TypeError('playlists must be of type None or list')
+            raise TypeError('playlists must be a list or None')
 
         # request a user's playlists
         playlists_output = {}
