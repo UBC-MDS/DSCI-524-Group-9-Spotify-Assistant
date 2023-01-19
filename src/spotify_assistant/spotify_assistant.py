@@ -226,6 +226,6 @@ class User:
         playlist_id = new_playlist['id'] 
        
         # Adding recommended songs to playlist
-        add_songs = self.sp.playlist_add_items(playlist_id=playlist_id, new_songs)
+        add_songs = self.sp.playlist_add_items(playlist_id=playlist_id, items = new_songs)
         
         print(f"Here is a link to the new playlist: {playlist_url}")
