@@ -12,10 +12,10 @@ class User:
 
     def __init__(self, client_credentials):
         
-        scopes = ["playlist-read-private",
-                  "playlist-read-collaborative",
-                  "playlist-modify-private",
-                  "user-library-read"]
+        scopes = [ "playlist-read-private",
+                        "playlist-read-collaborative",
+                        "playlist-modify-private",
+                        "user-library-read" ]
         
         self.sp = Spotify(
             auth_manager=SpotifyOAuth(
@@ -23,10 +23,67 @@ class User:
                 client_secret=client_credentials['client_secret'],
                 redirect_uri="http://127.0.0.1:8000",
                 scope=','.join(scopes)))
+        
+    def __get_releases(self, continent: str, limit: int = 5):
+        """Gets the top new releases
 
-        #Example usage
-        # playlists_response = requests.get('https://api.spotify.com/v1/me/playlists', headers=self.user_headers)
+        Parameters
+        -------
+        continent: str
+            The continent where the new releases were published
+        limit: int
+            Number of new releases to return
+            
+        Returns
+        -------
+        List
+            A list of dictionaries. Each dictionary contains metadata of 1 new release.
+        """
+        df = pd.read_csv("https://raw.githubusercontent.com/lukes/ISO-3166-Countries-with-Regional-Codes/master/all/all.csv")
+        cc_map = defaultdict(list)
+        df = df.reset_index()  # make sure indexes pair with number of rows
 
+        for index, row in df.iterrows():
+            if(row['alpha-2'] == 'AQ'): continue
+            cc_map[row['region']].append(row['alpha-2'])
+
+        assert limit > 0
+        assert continent in cc_map
+
+        print("-- Loading new releases in {}, this may take a while...".format(continent))
+
+        all_releases = []
+        
+        for country_code in cc_map[continent]:
+            try: 
+                new_releases = self.sp.new_releases(country_code)
+                all_releases.append(new_releases)
+            except: 
+                continue
+        
+        return all_releases
+    
+    def extract_albums(self, all_releases):
+        """Extracts the album names and the corresponding artists
+
+        Parameters
+        -------
+        all_releases: list
+            A list of dictionaries. Each dictionary contains metadata for 1 new release.
+            
+        Returns
+        -------
+        List
+            A list of dictionaries. Each dictionary contains metadata for 1 new release.
+        """
+        data = []
+        for new_releases in all_releases:
+            for item in new_releases['albums']['items']:
+                album_name = item['name']
+                artist_list = [x['name'] for x in item['artists']]
+                data.append("{}, produced by {}".format(album_name, ",".join(artist_list)))
+        
+        return data
 
     def get_new_releases_by_continent(self, continent: str, limit: int = 5):
         """Gets the new releases by continent
@@ -49,37 +106,78 @@ class User:
         >>> User.get_new_releases_by_continent("Asia")
         """
 
-        df = pd.read_csv("https://raw.githubusercontent.com/lukes/ISO-3166-Countries-with-Regional-Codes/master/all/all.csv")
-        cc_map = defaultdict(list)
-        df = df.reset_index()  # make sure indexes pair with number of rows
+        all_releases = self.__get_releases(continent, limit)
+        
+        albums = self.extract_albums(all_releases)
 
-        for index, row in df.iterrows():
-            if(row['alpha-2'] == 'AQ'): continue
-            cc_map[row['region']].append(row['alpha-2'])
+        return albums[:limit]
 
-        assert limit > 0
-        assert continent in cc_map
+        
+    def __get_saved_track(self):
+        """Returns the user's saved tracks
 
-        print("-- Loading new releases in {}, this may take a while...".format(continent))
+        Returns
+        -------
+        List
+            A list of dictionaries. Each dictionary contains metadata of 1 track.
+        """
+        saved_tracks = []
+        offset = 0
+        
+        tracks = self.sp.current_user_saved_tracks(limit=None).get('items')
+        while tracks != []:
+            saved_tracks.extend(tracks)
+            offset += len(tracks)
+            tracks = self.sp.current_user_saved_tracks(limit=None, 
+                                                       offset=offset).get('items')
+            
+        return saved_tracks
+    
+    def __get_artists(self, artists):
+        """Returns the metadata of a list of artists
 
-        data = []
-        for country_code in cc_map[continent]:
-
-            url = "https://api.spotify.com/v1/browse/new-releases?country={}".format(country_code)
-            r = requests.get(url, headers=self.user_headers_no_access, timeout=60)
-
-            if(r.status_code != 200): continue # Skipping some countries that cannot use spotify
-
-            new_releases = r.json()
-            for item in new_releases['albums']['items']:
-                album_name = item['name']
-                artist_list = [x['name'] for x in item['artists']]
-                data.append("{}, produced by {}".format(album_name, ",".join(artist_list)))
-
-        return data[:limit]
-
-
-
+        Parameters
+        ----------
+        artists : list
+            list of artist IDs (strings)
+            
+        Returns
+        -------
+        List
+            A list of dictionaries. Each dictionary contains metadata of 1 artist.
+        """
+        artist_information = []
+        
+        for artist_id in list(artists):
+            artist_information.append(self.sp.artist(artist_id))
+        
+        return artist_information
+    
+    @classmethod
+    def get_top_genres(cls, artist_information):
+        """Returns the most commonly occuring genres among different artists
+        
+        Parameters
+        ----------
+        artist_information : list
+            list of dictionaries containing artist metadata
+            
+        Returns
+        -------
+        List
+            A list of most common genres
+        """
+        genre_count = Counter()
+        
+        for artist_info in artist_information:
+            if 'genres' in artist_info:
+                for genre in artist_info['genres']:
+                    genre_count[genre] += 1
+        
+        genres = [genre[0] for genre in genre_count.most_common(5)]
+        
+        return genres
+    
     def get_users_top_genres(self):
         """Finds the top 5 genres from a user's saved tracks
 
@@ -94,30 +192,21 @@ class User:
         >>> RandomUser = User(credentials)
         >>> RandomUser.get_users_top_genres()
         """
-        genre_count = Counter()
         artists = set()
-        saved_tracks = []
         
-        offset = 0
-        tracks = self.sp.current_user_saved_tracks(limit=None).get('items')
-        while tracks != []:
-            saved_tracks.extend(tracks)
-            offset += len(tracks)
-            tracks = self.sp.current_user_saved_tracks(limit=None, 
-                                                       offset=offset).get('items')
-
+        # Get user's saved tracks
+        saved_tracks = self.__get_saved_track()
+        
         for track in saved_tracks:
             for artist in track['track']['artists']:
                 artists.add(artist['id'])
 
-        for artist_id in list(artists):
-            artist_info = self.sp.artist(artist_id)
-            
-            if 'genres' in artist_info:
-                for genre in artist_info['genres']:
-                    genre_count[genre] += 1
-
-        genres = [genre[0] for genre in genre_count.most_common(5)]
+        # Get information on all artists
+        artist_information = self.__get_artists(artists)
+        
+        #The driver function 
+        genres = self.get_top_genres(artist_information)
+        
         return genres
 
     def get_playlists_songs(self, playlists = None):
