@@ -196,4 +196,36 @@ class User:
         >>> RandomUser = User(credentials)
         >>> RandomUser.get_song_recommendations("Recommended Songs")
         """
-        pass
+        top_artists = set()
+        new_songs = []
+        # Get user's top 3 artists with their artist id information
+        user_artists = self.sp.current_user_top_tracks(limit=3, time_range='short_term').get('items')
+        
+        # Assuming within items we have artist name and id as fields
+        for response in user_artists['items']:
+            top_artists.add(response['id'])
+        
+        top_artists = list(top_artists)
+        
+        # Get 5 recommended song uri's
+        rec_songs = self.sp.recommendations(seed_artists=top_artists, limit=num_songs).get('items')
+        
+        for response in rec_songs['tracks']:
+            new_songs.append(response['uri'])
+        
+        # Create a new playlist to put the new songs in
+        possible_name = input("Please enter a name for the new playlist: ")
+        if playlist_name:
+            pass
+        else:
+            playlist_name = f"{pd.to_datetime('today').date()} Recommended Songs"
+            
+        new_playlist = self.sp.user_playlist_create(self.sp.current_user()['id'], playlist_name)
+        
+        playlist_url = new_playlist['external_urls']['spotify']
+        playlist_id = new_playlist['id'] 
+       
+        # Adding recommended songs to playlist
+        add_songs = self.sp.playlist_add_items(playlist_id=playlist_id, new_songs)
+        
+        print(f"Here is a link to the new playlist: {playlist_url}")
