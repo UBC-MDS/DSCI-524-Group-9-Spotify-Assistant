@@ -18,8 +18,7 @@ class User:
                   "user-library-read",
                   "user-top-read",
                   "playlist-modify-private",
-                  "playlist-modify-public",
-                  "user-top-read"]
+                  "playlist-modify-public"]
         
         self.sp = Spotify(
             auth_manager=SpotifyOAuth(
