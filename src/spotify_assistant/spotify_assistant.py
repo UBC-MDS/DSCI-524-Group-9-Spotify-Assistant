@@ -15,7 +15,11 @@ class User:
         scopes = ["playlist-read-private",
                   "playlist-read-collaborative",
                   "playlist-modify-private",
-                  "user-library-read"]
+                  "user-library-read",
+                  "user-top-read",
+                  "playlist-modify-private",
+                  "playlist-modify-public"
+                 ]
         
         self.sp = Spotify(
             auth_manager=SpotifyOAuth(
@@ -178,6 +182,7 @@ class User:
 
     def get_song_recommendations(self, playlist_name = None, num_songs = 10):
         """Creates a playlist containing recommended songs based on the user's top 3 artists.
+        If there are no top artists, use the user's first three saved tracks.
 
         Prints a url link to the new playlist on Spotify.
 
@@ -199,22 +204,28 @@ class User:
         top_artists = set()
         new_songs = []
         # Get user's top 3 artists with their artist id information
-        user_artists = self.sp.current_user_top_tracks(limit=3, time_range='short_term').get('items')
+        user_artists = self.sp.current_user_top_artists(limit=3, time_range='short_term').get('items')
         
         # Assuming within items we have artist name and id as fields
-        for response in user_artists['items']:
-            top_artists.add(response['id'])
+        if len(user_artists) > 0 :
+            for response in user_artists['items']:
+                top_artists.add(response['id'])
         
-        top_artists = list(top_artists)
+            top_artists = list(top_artists)
+            
+            # Get 5 recommended song uri's
+            rec_songs = self.sp.recommendations(seed_artists=top_artists, limit=num_songs).get('items')
+        else:
+            rec_songs = self.sp.recommendations(seed_genres=self.sp.recommendation_genre_seeds()['genres'][:5], 
+                                                limit=num_songs)
+
+        for track in rec_songs['tracks']:
+            new_songs.append(track['uri'])
         
-        # Get 5 recommended song uri's
-        rec_songs = self.sp.recommendations(seed_artists=top_artists, limit=num_songs).get('items')
-        
-        for response in rec_songs['tracks']:
-            new_songs.append(response['uri'])
+        # return new_songs
         
         # Create a new playlist to put the new songs in
-        possible_name = input("Please enter a name for the new playlist: ")
+        playlist_name = input("Please enter a name for the new playlist: ")
         if playlist_name:
             pass
         else:
