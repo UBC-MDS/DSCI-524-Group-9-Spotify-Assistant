@@ -1,0 +1,11 @@
+name: spotifypy
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.9
+  - ipykernel
+  - pandas
+  - requests
+  - spotipy
+prefix: /Users/JulieS/opt/miniconda3/envs/spotifypy
