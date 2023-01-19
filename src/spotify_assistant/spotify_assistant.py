@@ -199,7 +199,7 @@ class User:
         top_artists = set()
         new_songs = []
         # Get user's top 3 artists with their artist id information
-        user_artists = requests.get("https://api.spotify.com/v1/me/top/artists?limit=3", headers=self.user_headers, timeout=60).json()
+        user_artists = self.sp.current_user_top_tracks(limit=3, time_range='short_term').get('items')
         
         # Assuming within items we have artist name and id as fields
         for response in user_artists['items']:
@@ -208,8 +208,7 @@ class User:
         top_artists = list(top_artists)
         
         # Get 5 recommended song uri's
-        rec_songs = requests.get(f"https://api.spotify.com/v1/recommendations?seed_artists={top_artists}&limit={num_songs}",
-                                 headers=self.user_headers, timeout=60).json()
+        rec_songs = self.sp.recommendations(seed_artists=top_artists, limit=num_songs).get('items')
         
         for response in rec_songs['tracks']:
             new_songs.append(response['uri'])
@@ -221,16 +220,12 @@ class User:
         else:
             playlist_name = f"{pd.to_datetime('today').date()} Recommended Songs"
             
-        new_playlist = requests.post(f"https://api.spotify.com/v1/users/{user_id}/playlists?name={playlist_name}", 
-                                     headers=self.user_headers, timeout=60).json()
+        new_playlist = self.sp.user_playlist_create(self.sp.current_user()['id'], playlist_name)
         
         playlist_url = new_playlist['external_urls']['spotify']
         playlist_id = new_playlist['id'] 
        
         # Adding recommended songs to playlist
-        for uri in range(len(new_songs)):
-            new_songs[uri] = f"spotify:track:{new_songs[uri]}"
-        add_songs = requests.post(f"https://api.spotify.com/v1/playlists/{playlist_id}/tracks?uris={new_songs}", 
-                                  headers=self.user_headers, timeout=60).json()
+        add_songs = self.sp.playlist_add_items(playlist_id=playlist_id, new_songs)
         
         print(f"Here is a link to the new playlist: {playlist_url}")
