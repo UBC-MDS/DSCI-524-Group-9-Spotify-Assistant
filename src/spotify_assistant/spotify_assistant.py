@@ -2,27 +2,27 @@ import json
 import requests
 from datetime import date
 from collections import Counter
-from connector import get_access_token, get_no_access_token
+from connector import get_no_access_token
 import pandas as pd
 from collections import defaultdict
-
+from spotipy.oauth2 import SpotifyOAuth
+from spotipy import Spotify
 
 class User:
 
-    def __init__(self, client_credentials=None):
-
-        access_token = get_access_token(client_credentials=client_credentials)
-        no_access_token = get_no_access_token(client_credentials=client_credentials)
-
-        self.user_headers = {
-            "Authorization": "Bearer " + access_token,
-            "Content-Type": "application/json"
-        }
-
-        self.user_headers_no_access = {
-            "Authorization": "Bearer " + no_access_token,
-            "Content-Type": "application/json"
-        }
+    def __init__(self, client_credentials):
+        
+        scopes = ["playlist-read-private",
+                  "playlist-read-collaborative",
+                  "playlist-modify-private",
+                  "user-library-read"]
+        
+        self.sp = Spotify(
+            auth_manager=SpotifyOAuth(
+                client_id=client_credentials['client_id'],
+                client_secret=client_credentials['client_secret'],
+                redirect_uri="http://127.0.0.1:8000",
+                scope=','.join(scopes)))
 
         #Example usage
         # playlists_response = requests.get('https://api.spotify.com/v1/me/playlists', headers=self.user_headers)
@@ -96,14 +96,23 @@ class User:
         """
         genre_count = Counter()
         artists = set()
-        user_tracks_response = requests.get("https://api.spotify.com/v1/me/tracks", headers=self.user_headers, timeout=60).json()
+        saved_tracks = []
+        
+        offset = 0
+        tracks = self.sp.current_user_saved_tracks(limit=None).get('items')
+        while tracks != []:
+            saved_tracks.extend(tracks)
+            offset += len(tracks)
+            tracks = self.sp.current_user_saved_tracks(limit=None, 
+                                                       offset=offset).get('items')
 
-        for track in user_tracks_response['items']:
+        for track in saved_tracks:
             for artist in track['track']['artists']:
                 artists.add(artist['id'])
 
-        for artist in list(artists):
-            artist_info = requests.get(f"https://api.spotify.com/v1/artists/{artist}", headers=self.user_headers, timeout=60).json()
+        for artist_id in list(artists):
+            artist_info = self.sp.artist(artist_id)
+            
             if 'genres' in artist_info:
                 for genre in artist_info['genres']:
                     genre_count[genre] += 1
@@ -134,7 +143,36 @@ class User:
         >>> Caroline = User(credentials)
         >>> Caroline.get_playlists_songs()
         """
-        return None
+        # check valid playlists argument
+        if not (playlists is None or isinstance(playlists, list)):
+            raise TypeError('playlists must be a list or None')
+
+        # request a user's playlists
+        playlists_output = {}
+        user_playlists = requests.get("https://api.spotify.com/v1/me/playlists", headers=self.user_headers, timeout=60).json()
+
+        # create dictionary where each key is a playlist name
+        for response in user_playlists['items']:
+            if (playlists):
+                if response['name'] in playlists:
+                    playlists_output[response['name']] = {'id': response['id'], 'songs': []}
+                else:
+                    continue
+            else:
+                playlists_output[response['name']] = {'id': response['id'], 'songs': []}
+        
+        # return empty dictionary if no playlists were added
+        if len(playlists_output) == 0:
+            print('No playlists were found')
+            return playlists_output
+        
+        # get songs from each playlist
+        for playlist in playlists_output:
+            playlist_songs = requests.get(f"https://api.spotify.com/v1/playlists/{playlists_output[playlist]['id']}/tracks", headers=self.user_headers, timeout=60).json()
+            for song in playlist_songs['items']:
+                playlists_output[playlist]['songs'].append(song['track']['name'])
+
+        return playlists_output
         
 
 
