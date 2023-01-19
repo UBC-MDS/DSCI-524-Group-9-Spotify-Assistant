@@ -147,12 +147,20 @@ class User:
         if not (playlists is None or isinstance(playlists, list)):
             raise TypeError('playlists must be a list or None')
 
-        # request a user's playlists
         playlists_output = {}
-        user_playlists = requests.get("https://api.spotify.com/v1/me/playlists", headers=self.user_headers, timeout=60).json()
+        
+        # request a user's playlists
+        all_playlists = []
+        offset = 0
+
+        user_playlists = self.sp.current_user_playlists(limit=None).get('items')
+        while user_playlists != []:
+            all_playlists.extend(user_playlists)
+            offset += len(user_playlists)
+            user_playlists = self.sp.current_user_playlists(limit=None, offset=offset).get('items')
 
         # create dictionary where each key is a playlist name
-        for response in user_playlists['items']:
+        for response in all_playlists:
             if (playlists):
                 if response['name'] in playlists:
                     playlists_output[response['name']] = {'id': response['id'], 'songs': []}
@@ -168,9 +176,20 @@ class User:
         
         # get songs from each playlist
         for playlist in playlists_output:
-            playlist_songs = requests.get(f"https://api.spotify.com/v1/playlists/{playlists_output[playlist]['id']}/tracks", headers=self.user_headers, timeout=60).json()
-            for song in playlist_songs['items']:
-                playlists_output[playlist]['songs'].append(song['track']['name'])
+            offset=0
+            playlist_songs = self.sp.playlist_items(
+                playlist_id=playlists_output[playlist]['id'], limit=None
+            ).get('items')
+
+            while playlist_songs != []:
+                for song in playlist_songs:
+                    playlists_output[playlist]['songs'].append(song['track']['name'])
+                offset += len(playlist_songs)
+                playlist_songs = self.sp.playlist_items(
+                    playlist_id=playlists_output[playlist]['id'], limit=None, offset=offset
+                ).get('items')
+
+
 
         return playlists_output
         
