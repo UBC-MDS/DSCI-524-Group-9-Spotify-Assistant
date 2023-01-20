@@ -338,7 +338,7 @@ class User:
         return new_songs
     
     
-    def __create_playlist(self, playlist_name=None):
+    def __create_playlist(self, playlist_name):
         """Creates a new, empty playlist for the user on Spotify.
         
         Parameters
@@ -351,7 +351,7 @@ class User:
         (str, str)
             A tuple containing the url and playlist id for the new playlist.
         """
-        playlist_name = input("Please enter a name for the new playlist: ")
+        #playlist_name = input("Please enter a name for the new playlist: ")
         if playlist_name:
             pass
         else:
