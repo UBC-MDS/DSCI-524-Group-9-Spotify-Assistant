@@ -1,8 +1,6 @@
 import json
-import requests
 from datetime import date
 from collections import Counter
-from connector import get_no_access_token
 import pandas as pd
 from collections import defaultdict
 from spotipy.oauth2 import SpotifyOAuth
@@ -66,7 +64,8 @@ class User:
         
         return all_releases
     
-    def extract_albums(self, all_releases):
+    @classmethod
+    def extract_albums(cls, all_releases):
         """Extracts the album names and the corresponding artists
 
         Parameters
