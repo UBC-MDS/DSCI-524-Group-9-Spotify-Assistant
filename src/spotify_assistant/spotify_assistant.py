@@ -12,10 +12,13 @@ class User:
 
     def __init__(self, client_credentials):
         
-        scopes = [ "playlist-read-private",
-                        "playlist-read-collaborative",
-                        "playlist-modify-private",
-                        "user-library-read" ]
+        scopes = ["playlist-read-private",
+                  "playlist-read-collaborative",
+                  "playlist-modify-private",
+                  "user-library-read",
+                  "user-top-read",
+                  "playlist-modify-private",
+                  "playlist-modify-public"]
         
         self.sp = Spotify(
             auth_manager=SpotifyOAuth(
@@ -209,7 +212,101 @@ class User:
         
         return genres
 
-    def get_playlists_songs(self, playlists = None):
+    def __get_all_playlists(self):
+        """Calls the spotify api and returns the current user's saved/owned playlists
+        
+        Returns
+        -------
+        list
+            A list of spotify responses containing information about a user's playlists
+        """
+        all_playlists = []
+        offset = 0
+        user_playlists = self.sp.current_user_playlists(limit=None).get('items')
+        while user_playlists != []:
+            all_playlists.extend(user_playlists)
+            offset += len(user_playlists)
+            user_playlists = self.sp.current_user_playlists(limit=None, offset=offset).get('items')
+        return all_playlists
+    
+    @classmethod
+    def filter_playlists(cls, playlist_response, playlists = None):
+        """Filters a spotify playlist response for specified playlists
+
+        Parameters
+        ----------
+        playlist_response : list
+            list of spotify responses containing information about playlists
+        playlists : list
+            list of playlist names (strings) to get songs from, defaults to all
+
+        Returns
+        -------
+        dict
+            A dictionary with the names of playlists as keys,
+            and the playlist id as the value
+        """
+        # check valid playlists argument
+        if not (playlists is None or isinstance(playlists, list)):
+            raise TypeError('playlists must be a list or None')
+        
+        filtered_playlists = {}
+
+        # create dictionary where each key is a playlist name
+        for response in playlist_response:
+            if (playlists):
+                if response['name'] in playlists:
+                    filtered_playlists[response['name']] = response['id']
+                else:
+                    continue
+            else:
+                filtered_playlists[response['name']] = response['id']
+        
+        return filtered_playlists
+
+    def __get_one_playlists_songs(self, playlist_id):
+        """Calls the spotify api and returns the all the songs in a playlist
+        
+        Returns
+        -------
+        list
+            A list of spotify responses containing all the songs in a playlist
+        """
+        all_songs = []
+        offset=0
+        playlist_songs = self.sp.playlist_items(playlist_id=playlist_id, limit=None).get('items')
+
+        while playlist_songs != []:
+            all_songs.extend(playlist_songs)
+            offset += len(playlist_songs)
+            playlist_songs = self.sp.playlist_items(
+                playlist_id=playlist_id, limit=None, offset=offset
+            ).get('items')
+        return all_songs
+    
+    @classmethod
+    def format_songs(cls, song_response):
+        """Formats a spotify response into just song names
+
+        Parameters
+        ----------
+        playlist_response : list
+            list of spotify responses containing information about playlists
+        playlists : list
+            list of playlist names (strings) to get songs from, defaults to all
+
+        Returns
+        -------
+        dict
+            A dictionary with the names of playlists as keys,
+            and the playlist id as the value
+        """
+        song_list = []
+        for song in song_response:
+            song_list.append(song['track']['name'])
+        return song_list
+
+    def get_users_playlists_songs(self, playlists = None):
         """Gets all of the song titles within a user's owned and followed playlists
 
         Playlists from which to retrieve songs can be specified by name as a list,
@@ -232,41 +329,29 @@ class User:
         >>> Caroline = User(credentials)
         >>> Caroline.get_playlists_songs()
         """
-        # check valid playlists argument
-        if not (playlists is None or isinstance(playlists, list)):
-            raise TypeError('playlists must be a list or None')
-
-        # request a user's playlists
         playlists_output = {}
-        user_playlists = requests.get("https://api.spotify.com/v1/me/playlists", headers=self.user_headers, timeout=60).json()
-
-        # create dictionary where each key is a playlist name
-        for response in user_playlists['items']:
-            if (playlists):
-                if response['name'] in playlists:
-                    playlists_output[response['name']] = {'id': response['id'], 'songs': []}
-                else:
-                    continue
-            else:
-                playlists_output[response['name']] = {'id': response['id'], 'songs': []}
+        
+        # request a user's playlists
+        all_playlists = self.__get_all_playlists()
+        filtered_playlists = self.filter_playlists(all_playlists, playlists)
         
         # return empty dictionary if no playlists were added
-        if len(playlists_output) == 0:
+        if len(filtered_playlists) == 0:
             print('No playlists were found')
             return playlists_output
         
         # get songs from each playlist
-        for playlist in playlists_output:
-            playlist_songs = requests.get(f"https://api.spotify.com/v1/playlists/{playlists_output[playlist]['id']}/tracks", headers=self.user_headers, timeout=60).json()
-            for song in playlist_songs['items']:
-                playlists_output[playlist]['songs'].append(song['track']['name'])
-
+        for playlist in filtered_playlists:
+            all_songs = self.__get_one_playlists_songs(playlist_id = filtered_playlists[playlist])
+            playlists_output[playlist] = self.format_songs(all_songs)
+            
         return playlists_output
         
 
 
     def get_song_recommendations(self, playlist_name = None, num_songs = 10):
         """Creates a playlist containing recommended songs based on the user's top 3 artists.
+        If there are no top artists, use the user's first three saved tracks.
 
         Prints a url link to the new playlist on Spotify.
 
@@ -285,4 +370,42 @@ class User:
         >>> RandomUser = User(credentials)
         >>> RandomUser.get_song_recommendations("Recommended Songs")
         """
-        pass
+        top_artists = set()
+        new_songs = []
+        # Get user's top 3 artists with their artist id information
+        user_artists = self.sp.current_user_top_artists(limit=3, time_range='short_term').get('items')
+        
+        # Assuming within items we have artist name and id as fields
+        if len(user_artists) > 0 :
+            for response in user_artists['items']:
+                top_artists.add(response['id'])
+        
+            top_artists = list(top_artists)
+            
+            # Get 5 recommended song uri's
+            rec_songs = self.sp.recommendations(seed_artists=top_artists, limit=num_songs).get('items')
+        else:
+            rec_songs = self.sp.recommendations(seed_genres=self.sp.recommendation_genre_seeds()['genres'][:5], 
+                                                limit=num_songs)
+
+        for track in rec_songs['tracks']:
+            new_songs.append(track['uri'])
+        
+        # return new_songs
+        
+        # Create a new playlist to put the new songs in
+        playlist_name = input("Please enter a name for the new playlist: ")
+        if playlist_name:
+            pass
+        else:
+            playlist_name = f"{pd.to_datetime('today').date()} Recommended Songs"
+            
+        new_playlist = self.sp.user_playlist_create(self.sp.current_user()['id'], playlist_name)
+        
+        playlist_url = new_playlist['external_urls']['spotify']
+        playlist_id = new_playlist['id'] 
+       
+        # Adding recommended songs to playlist
+        add_songs = self.sp.playlist_add_items(playlist_id=playlist_id, items = new_songs)
+        
+        print(f"Here is a link to the new playlist: {playlist_url}")
