@@ -406,7 +406,8 @@ class User:
             A list of artist or track ID's.
         
         num_songs: int
-            The number of recommended songs to return.
+            The number of recommended songs to return.  
+            Must be between 1 and 100 (inclusive).
         
         Returns
         -------
@@ -415,7 +416,10 @@ class User:
         """
         new_songs = []
         
-        if seed_type == 'artist':
+        if not (0 < num_songs <= 100):
+            raise ValueError('Number of songs to recommend must be between 1 and 100 (inclusive)')
+        
+        if seed_type == 'artists':
             rec_songs = self.sp.recommendations(seed_artists=seeds, 
                                                 limit=num_songs)
         else:
@@ -423,6 +427,7 @@ class User:
                                                 limit=num_songs)
         for track in rec_songs['tracks']:
             new_songs.append(track['uri'])
+        
         return new_songs
     
     
@@ -439,7 +444,6 @@ class User:
         (str, str)
             A tuple containing the url and playlist id for the new playlist.
         """
-        #playlist_name = input("Please enter a name for the new playlist: ")
         if playlist_name:
             pass
         else:
@@ -480,7 +484,7 @@ class User:
             with the current date (i.e. "2023-01-14 Recommended Songs").
 
         num_songs : int
-            The number of songs to recommend.
+            The number of songs to recommend. Must be between 1 and 100 (inclusive).
 
         Examples
         --------
@@ -493,11 +497,11 @@ class User:
         
         if len(artist_info) > 0:
             seed_type = 'artists'
-            seeds = self.__extract_artist_id(cls, artist_info)
+            seeds = self.__extract_artist_id(artist_info)
         else:
             seed_type = 'genres'
             seeds = self.__get_genre_seeds()
-        
+
         print(f"Generating recommended songs based on {seed_type}...")
         recommended_songs = self.__get_recommended_songs(seed_type, seeds, num_songs)
         
