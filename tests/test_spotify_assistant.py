@@ -1,13 +1,30 @@
-import sys
-sys.path.append("../src/spotify_assistant")
-import spotify_assistant
+from spotify_assistant import spotify_assistant
 import pytest
+import json
 
+def test_get_users_top_genres():
+    artists_info = json.load(open('tests/artist_info.json', 'r'))
+    RandomUser = spotify_assistant.User
+    
+    # Test the number of genres returned
+    genres = RandomUser.get_top_genres(artists_info['artists']) 
+    assert len(genres) == 5, "Incorrect number of genres returned"
+    
+    # Test with no artist information
+    genres = RandomUser.get_top_genres([]) 
+    assert isinstance(genres, list)
+    assert len(genres) == 0
+    
+    # Test with incorrect datatype of the input
+    try:
+        RandomUser.get_top_genres(artists_info['artists'][0]) 
+    except Exception as e:
+        assert isinstance(e, Exception)
 
 def test_get_new_releases_by_continent():
 
     # Create a new user
-    credentials = {'client_id': "74652d1e1b664c34bacea50da044afc2", 'client_secret': "a76de7b1d254428e8200ea9c74ad3b77"}
+    credentials = None
     RandomUser = spotify_assistant.User(credentials)
 
     # Test with invalid continent name
@@ -62,19 +79,19 @@ def test_get_playlists_songs():
 
     # Test with invalid playlists argument
     with pytest.raises(TypeError, match = 'must be a list or None'):
-        User.filter_playlists(fake_playlist_output, playlists=2)
+        spotify_assistant.User.filter_playlists(fake_playlist_output, playlists=2)
 
     # Test with no playlists matching the list
-    noMatch = User.filter_playlists(fake_playlist_output, playlists=['aaa'])
+    noMatch = spotify_assistant.User.filter_playlists(fake_playlist_output, playlists=['aaa'])
     assert isinstance(noMatch, dict)
     assert len(noMatch) == 0
 
     # Test that matching playlists are returned
-    yesMatch = User.filter_playlists(fake_playlist_output, playlists=['night drives', 'aaa'])
+    yesMatch = spotify_assistant.User.filter_playlists(fake_playlist_output, playlists=['night drives', 'aaa'])
     assert yesMatch == {'night drives': '4k3qVV6kpEPU8BbPNFExGH'}
 
     # Test that function returns proper song names
-    songnames = User.format_songs(fake_song_output)
+    songnames = spotify_assistant.User.format_songs(fake_song_output)
     assert songnames == ['False Knight']
 
     
