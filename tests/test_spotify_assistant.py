@@ -28,16 +28,12 @@ def test_get_new_releases_by_continent():
     RandomUser = spotify_assistant.User
 
     # Test with invalid continent name
-    try:
+    with pytest.raises(TypeError, match = 'must be a valid continent name'):
         RandomUser.get_new_releases_by_continent("ContinentThatDoesNotExist")
-    except Exception as e:
-        assert isinstance(e, Exception)
 
     # Test with invalid parameter
-    try:
+    with pytest.raises(TypeError, match = 'must be a valid limit number'):
         RandomUser.get_new_releases_by_continent("Asia", limit=-1)
-    except Exception as e:
-        assert isinstance(e, Exception)
 
     # Test if the function returns expected number of outputs
     data = RandomUser.get_new_releases_by_continent("Asia", limit=5)
