@@ -2,6 +2,7 @@ import json
 from datetime import date
 from collections import Counter
 import pandas as pd
+import numpy as np
 from collections import defaultdict
 from spotipy.oauth2 import SpotifyOAuth
 from spotipy import Spotify
@@ -347,10 +348,129 @@ class User:
         return playlists_output
         
 
+        
+    def __get_top_artists(self):
+        """Returns the current user's top artists from Spotify.
+        
+        Returns
+        -------
+        list
+            A list of artist information.
+        """
+        user_artists = self.sp.current_user_top_artists(limit=3, time_range='short_term').get('items')
+        return user_artists
+    
+    @classmethod
+    def __extract_artist_id(cls, artists):
+        """Extracts Returns the current user's top artists from Spotify.
+        
+        Parameters
+        ----------
+        artists : list
+            A list of artist information (name, ID, etc.).
+        
+        Returns
+        -------
+        list
+            A list of artist id's.
+        """
+        top_artists = set()
+        for response in artists:
+            
+            top_artists.add(response['id'])
+        
+        top_artists = list(top_artists)
+        return top_artists
+        
+    def __get_genre_seeds(self):
+        """Returns 5 genre seeds from Spotify.
+        
+        Returns
+        -------
+        list
+            A list of genre seeds.
+        """
+        all_genres = self.sp.recommendation_genre_seeds()['genres']
+        np.random.shuffle(all_genres)
+        return all_genres[:5]
+    
+    
+    def __get_recommended_songs(self, seed_type, seeds, num_songs=10):
+        """Returns a specified number of recommended songs from Spotify.
+        
+        Parameters
+        ----------
+        seed_type : str
+            Either 'artists' or 'genres'. Default is 'artists'. 
+        
+        seeds: list
+            A list of artist or track ID's.
+        
+        num_songs: int
+            The number of recommended songs to return.
+        
+        Returns
+        -------
+        list
+            A list of track uri's for identifying specific tracks.
+        """
+        new_songs = []
+        
+        if seed_type == 'artists':
+            rec_songs = self.sp.recommendations(seed_artists=seeds, 
+                                                limit=num_songs)
+        else:
+            rec_songs = self.sp.recommendations(seed_genres=seeds, 
+                                                limit=num_songs)
+        for track in rec_songs['tracks']:
+            new_songs.append(track['uri'])
+        return new_songs
+    
+    
+    def __create_playlist(self, playlist_name):
+        """Creates a new, empty playlist for the user on Spotify.
+        
+        Parameters
+        ----------
+        playlist_name: str 
+            The name of the new playlist.
+        
+        Returns
+        -------
+        (str, str)
+            A tuple containing the url and playlist id for the new playlist.
+        """
+        if playlist_name:
+            pass
+        else:
+            playlist_name = f"{pd.to_datetime('today').date()} Recommended Songs"
+            
+        new_playlist = self.sp.user_playlist_create(self.sp.current_user()['id'], playlist_name)
+        
+        playlist_url = new_playlist['external_urls']['spotify']
+        playlist_id = new_playlist['id'] 
+        
+        return (playlist_url, playlist_id)
+    
+    def __add_songs_to_playlist(self, playlist_id, new_songs):
+        """Adds songs to a specified user playlist on Spotify.
+        
+        Parameters
+        ----------
+        playlist_id: str 
+            The id of the new playlist.
+            
+        new_songs: list
+            List of track ID's corresponding to songs to add to the playlist.
+        
+        """
+        self.sp.playlist_add_items(playlist_id=playlist_id, items = new_songs)
+        
 
     def get_song_recommendations(self, playlist_name = None, num_songs = 10):
         """Creates a playlist containing recommended songs based on the user's top 3 artists.
-        If there are no top artists, use the user's first three saved tracks.
+        If there are not yet any top artists for the user's account,
+        use genres instead.
 
         Prints a url link to the new playlist on Spotify.
 
@@ -361,7 +481,7 @@ class User:
             with the current date (i.e. "2023-01-14 Recommended Songs").
 
         num_songs : int
-            The number of songs to recommend.
+            The number of songs to recommend. Must be between 1 and 100 (inclusive).
 
         Examples
         --------
@@ -369,42 +489,22 @@ class User:
         >>> RandomUser = User(credentials)
         >>> RandomUser.get_song_recommendations("Recommended Songs")
         """
-        top_artists = set()
-        new_songs = []
-        # Get user's top 3 artists with their artist id information
-        user_artists = self.sp.current_user_top_artists(limit=3, time_range='short_term').get('items')
         
-        # Assuming within items we have artist name and id as fields
-        if len(user_artists) > 0 :
-            for response in user_artists['items']:
-                top_artists.add(response['id'])
+        artist_info = self.__get_top_artists()
         
-            top_artists = list(top_artists)
-            
-            # Get 5 recommended song uri's
-            rec_songs = self.sp.recommendations(seed_artists=top_artists, limit=num_songs).get('items')
+        if len(artist_info) > 0:
+            seed_type = 'artists'
+            seeds = self.__extract_artist_id(artist_info)
         else:
-            rec_songs = self.sp.recommendations(seed_genres=self.sp.recommendation_genre_seeds()['genres'][:5], 
-                                                limit=num_songs)
-
-        for track in rec_songs['tracks']:
-            new_songs.append(track['uri'])
-        
-        # return new_songs
-        
-        # Create a new playlist to put the new songs in
-        playlist_name = input("Please enter a name for the new playlist: ")
-        if playlist_name:
-            pass
-        else:
-            playlist_name = f"{pd.to_datetime('today').date()} Recommended Songs"
+            seed_type = 'genres'
+            seeds = self.__get_genre_seeds()
             
-        new_playlist = self.sp.user_playlist_create(self.sp.current_user()['id'], playlist_name)
+        recommended_songs = self.__get_recommended_songs(seed_type, seeds, num_songs)
         
-        playlist_url = new_playlist['external_urls']['spotify']
-        playlist_id = new_playlist['id'] 
-       
-        # Adding recommended songs to playlist
-        add_songs = self.sp.playlist_add_items(playlist_id=playlist_id, items = new_songs)
+        print(f"Generating recommended songs based on {seed_type}...")
+        
+        playlist_url, playlist_id = self.__create_playlist(playlist_name)
+        
+        self.__add_songs_to_playlist(playlist_id, recommended_songs)
         
         print(f"Here is a link to the new playlist: {playlist_url}")
