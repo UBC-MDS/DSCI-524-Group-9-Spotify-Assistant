@@ -8,3 +8,5 @@ dependencies:
   - pandas
   - requests
   - spotipy
+  - pytest
+prefix: /Users/JulieS/opt/miniconda3/envs/spotifypy
