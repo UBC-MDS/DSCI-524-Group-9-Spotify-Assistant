@@ -5,39 +5,35 @@ import json
 def test_get_users_top_genres():
     artists_info = json.load(open('tests/artist_info.json', 'r'))
     RandomUser = spotify_assistant.User
-    
+
     # Test the number of genres returned
-    genres = RandomUser.get_top_genres(artists_info['artists']) 
+    genres = RandomUser.get_top_genres(artists_info['artists'])
     assert len(genres) == 5, "Incorrect number of genres returned"
-    
+
     # Test with no artist information
-    genres = RandomUser.get_top_genres([]) 
+    genres = RandomUser.get_top_genres([])
     assert isinstance(genres, list)
     assert len(genres) == 0
-    
+
     # Test with incorrect datatype of the input
     try:
-        RandomUser.get_top_genres(artists_info['artists'][0]) 
+        RandomUser.get_top_genres(artists_info['artists'][0])
     except Exception as e:
         assert isinstance(e, Exception)
 
 def test_get_new_releases_by_continent():
 
     # Create a new user
-    credentials = None
-    RandomUser = spotify_assistant.User(credentials)
+    artists_info = json.load(open('tests/artist_info.json', 'r'))
+    RandomUser = spotify_assistant.User
 
     # Test with invalid continent name
-    try:
+    with pytest.raises(TypeError, match = 'must be a valid continent name'):
         RandomUser.get_new_releases_by_continent("ContinentThatDoesNotExist")
-    except Exception as e:
-        assert isinstance(e, Exception)
 
     # Test with invalid parameter
-    try:
+    with pytest.raises(TypeError, match = 'must be a valid limit number'):
         RandomUser.get_new_releases_by_continent("Asia", limit=-1)
-    except Exception as e:
-        assert isinstance(e, Exception)
 
     # Test if the function returns expected number of outputs
     data = RandomUser.get_new_releases_by_continent("Asia", limit=5)
