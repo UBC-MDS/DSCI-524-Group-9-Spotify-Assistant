@@ -288,6 +288,7 @@ class User:
         """
         top_artists = set()
         for response in artists:
+            
             top_artists.add(response['id'])
         
         top_artists = list(top_artists)
@@ -327,7 +328,7 @@ class User:
         """
         new_songs = []
         
-        if seed_type == 'artist':
+        if seed_type == 'artists':
             rec_songs = self.sp.recommendations(seed_artists=seeds, 
                                                 limit=num_songs)
         else:
@@ -351,7 +352,6 @@ class User:
         (str, str)
             A tuple containing the url and playlist id for the new playlist.
         """
-        #playlist_name = input("Please enter a name for the new playlist: ")
         if playlist_name:
             pass
         else:
@@ -381,7 +381,8 @@ class User:
 
     def get_song_recommendations(self, playlist_name = None, num_songs = 10):
         """Creates a playlist containing recommended songs based on the user's top 3 artists.
-        If there are no top artists, use the user's first three saved tracks.
+        If there are not yet any top artists for the user's account,
+        use genres instead.
 
         Prints a url link to the new playlist on Spotify.
 
@@ -405,13 +406,14 @@ class User:
         
         if len(artist_info) > 0:
             seed_type = 'artists'
-            seeds = self.__extract_artist_id(cls, artist_info)
+            seeds = self.__extract_artist_id(artist_info)
         else:
             seed_type = 'genres'
             seeds = self.__get_genre_seeds()
+            
+        recommended_songs = self.__get_recommended_songs(seed_type, seeds, num_songs)
         
         print(f"Generating recommended songs based on {seed_type}...")
-        recommended_songs = self.__get_recommended_songs(seed_type, seeds, num_songs)
         
         playlist_url, playlist_id = self.__create_playlist(playlist_name)
         
