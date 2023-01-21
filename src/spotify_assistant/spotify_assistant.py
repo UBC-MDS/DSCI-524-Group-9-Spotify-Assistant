@@ -393,7 +393,7 @@ class User:
             with the current date (i.e. "2023-01-14 Recommended Songs").
 
         num_songs : int
-            The number of songs to recommend.
+            The number of songs to recommend. Must be between 1 and 100 (inclusive).
 
         Examples
         --------
