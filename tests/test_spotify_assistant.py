@@ -89,3 +89,43 @@ def test_get_playlists_songs():
     # Test that function returns proper song names
     songnames = spotify_assistant.User.format_songs(fake_song_output)
     assert songnames == ['False Knight']
+
+    
+def test_get_song_recommendations():
+    credentials = None
+    Random_User = spotify_assistant.User(credentials)
+        
+    example_seeds = ['2rRUfv2w535SEUV1YO5SP6', '6uRJnvQ3f8whVnmeoecv5Z']
+    example_seed_type = 'artists'
+        
+    example_artist_info = {
+        'external_urls': {'spotify': 'https://open.spotify.com/artist/6uRJnvQ3f8whVnmeoecv5Z'}, 
+        'followers': {'href': None, 'total': 179579}, 
+        'genres': ['german orchestra', 'orchestra'], 
+        'href': 'https://api.spotify.com/v1/artists/6uRJnvQ3f8whVnmeoecv5Z', 
+        'id': '6uRJnvQ3f8whVnmeoecv5Z', 
+        'images': [
+            {'height': 640, 'url': 'https://i.scdn.co/image/ab6761610000e5eb92e0a1e423bd8590dcd43bda', 'width': 640}, 
+            {'height': 320, 'url': 'https://i.scdn.co/image/ab6761610000517492e0a1e423bd8590dcd43bda', 'width': 320}, 
+            {'height': 160, 'url': 'https://i.scdn.co/image/ab6761610000f17892e0a1e423bd8590dcd43bda', 'width': 160}
+        ], 
+        'name': 'Berliner Philharmoniker', 
+        'popularity': 74, 
+        'type': 'artist', 
+        'uri': 'spotify:artist:6uRJnvQ3f8whVnmeoecv5Z'
+    }
+        
+        
+    # Test that artist id's are correctly extracted
+    example_id = Random_User.__extract_artist_id(example_artist_info)
+    assert example_id == ['6uRJnvQ3f8whVnmeoecv5Z'], "Artist id was not correctly extracted"
+        
+        
+    # Test that the number of recommended songs to generate is between 1 and 100
+    with pytest.raises(ValueError, match = 'Number of songs to recommend must be between 1 and 100 (inclusive)'):
+        Random_User.__get_recommended_songs(example_seed_type, example_seeds, num_songs=123)
+    
+    # Test that new songs were generated, and that the correct number of songs was generated
+    recommended_songs = Random_User.__get_recommended_songs(example_seed_type, example_seeds, 10)
+    assert len(recommended_songs) > 0, "New songs were not generated. Check the input seeds."
+    assert len(recommended_songs) == 10, "Incorrect number of songs generated."

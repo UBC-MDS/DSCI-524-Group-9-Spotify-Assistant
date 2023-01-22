@@ -407,7 +407,8 @@ class User:
             A list of artist or track ID's.
         
         num_songs: int
-            The number of recommended songs to return.
+            The number of recommended songs to return.  
+            Must be between 1 and 100 (inclusive).
         
         Returns
         -------
@@ -415,6 +416,9 @@ class User:
             A list of track uri's for identifying specific tracks.
         """
         new_songs = []
+        
+        if not (0 < num_songs <= 100):
+            raise ValueError('Number of songs to recommend must be between 1 and 100 (inclusive)')
         
         if seed_type == 'artists':
             rec_songs = self.sp.recommendations(seed_artists=seeds, 
@@ -424,6 +428,7 @@ class User:
                                                 limit=num_songs)
         for track in rec_songs['tracks']:
             new_songs.append(track['uri'])
+        
         return new_songs
     
     
@@ -498,7 +503,7 @@ class User:
         else:
             seed_type = 'genres'
             seeds = self.__get_genre_seeds()
-            
+  
         recommended_songs = self.__get_recommended_songs(seed_type, seeds, num_songs)
         
         print(f"Generating recommended songs based on {seed_type}...")
