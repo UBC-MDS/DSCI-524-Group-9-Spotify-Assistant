@@ -361,7 +361,7 @@ class User:
         return user_artists
     
     @classmethod
-    def __extract_artist_id(cls, artists):
+    def extract_artist_id(cls, artists):
         """Extracts Returns the current user's top artists from Spotify.
         
         Parameters
@@ -375,11 +375,15 @@ class User:
             A list of artist id's.
         """
         top_artists = set()
-        for response in artists:
-            
-            top_artists.add(response['id'])
         
-        top_artists = list(top_artists)
+        if len(artists) == 0:
+            return []
+        else:
+            for response in artists:
+
+                top_artists.add(response['id'])
+
+            top_artists = list(top_artists)
         return top_artists
         
     def __get_genre_seeds(self):
@@ -395,7 +399,7 @@ class User:
         return all_genres[:5]
     
     
-    def __get_recommended_songs(self, seed_type, seeds, num_songs=10):
+    def get_recommended_songs(self, seed_type, seeds, num_songs=10):
         """Returns a specified number of recommended songs from Spotify.
         
         Parameters
@@ -499,12 +503,12 @@ class User:
         
         if len(artist_info) > 0:
             seed_type = 'artists'
-            seeds = self.__extract_artist_id(artist_info)
+            seeds = self.extract_artist_id(artist_info)
         else:
             seed_type = 'genres'
             seeds = self.__get_genre_seeds()
   
-        recommended_songs = self.__get_recommended_songs(seed_type, seeds, num_songs)
+        recommended_songs = self.get_recommended_songs(seed_type, seeds, num_songs)
         
         print(f"Generating recommended songs based on {seed_type}...")
         
