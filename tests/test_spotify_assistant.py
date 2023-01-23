@@ -25,7 +25,7 @@ def test_get_new_releases_by_continent():
 
     # Create a new user
     artists_info = json.load(open('tests/artist_info.json', 'r'))
-    RandomUser = spotify_assistant.User
+    RandomUser = spotify_assistant.User()
 
     # Test with invalid continent name
     with pytest.raises(TypeError):
