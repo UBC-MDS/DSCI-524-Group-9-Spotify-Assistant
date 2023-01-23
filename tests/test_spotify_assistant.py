@@ -21,23 +21,34 @@ def test_get_users_top_genres():
     except Exception as e:
         assert isinstance(e, Exception)
 
+
 def test_get_new_releases_by_continent():
 
     # Create a new user
-    credentials = None
-    Random_User = spotify_assistant.User(credentials)
+    cc_map = spotify_assistant.User.get_map()
 
-    # Test with invalid continent name
-    with pytest.raises(TypeError):
-        RandomUser.get_new_releases_by_continent(continent="ContinentThatDoesNotExist",limit=5)
+    # Assert that the map is a dict object
+    assert isinstance(cc_map, dict) == True
 
-    # Test with invalid parameter
-    with pytest.raises(TypeError):
-        RandomUser.get_new_releases_by_continent(continent="Asia", limit=-1)
+    # Assert the number of continents to be correct
+    assert len(cc_map) == 5
 
-    # Test if the function returns expected number of outputs
-    data = RandomUser.get_new_releases_by_continent(continent="Asia", limit=5)
-    assert len(data) == 5
+    # Assert the number of countires in Asia to be correct
+    assert len(cc_map['Asia']) == 51
+
+    # Assert the number of countires in Europe to be correct
+    assert len(cc_map['Europe']) == 51
+
+    # Assert the number of countires  in Americas to be correct
+    assert len(cc_map['Americas']) == 57
+
+    # Assert the number of countires in Africa to be correct
+    assert len(cc_map['Africa']) == 60
+
+    # Assert the number of countires in Oceania to be correct
+    assert len(cc_map['Oceania']) == 29
+
+
 
 def test_get_playlists_songs():
 

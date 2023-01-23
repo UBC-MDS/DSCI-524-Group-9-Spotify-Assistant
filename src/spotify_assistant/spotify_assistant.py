@@ -26,6 +26,30 @@ class User:
                 redirect_uri="http://127.0.0.1:8000",
                 scope=','.join(scopes)))
 
+
+    @classmethod
+    def get_map(cls):
+        """Gets continent to country map
+
+        Parameters
+        -------
+
+        Returns
+        -------
+        Dict
+            A hashmap
+        """
+        df = pd.read_csv("https://raw.githubusercontent.com/lukes/ISO-3166-Countries-with-Regional-Codes/master/all/all.csv")
+        cc_map = defaultdict(list)
+        df = df.reset_index()  # make sure indexes pair with number of rows
+
+        for index, row in df.iterrows():
+            if(row['alpha-2'] == 'AQ'): continue
+            cc_map[row['region']].append(row['alpha-2'])
+
+        return cc_map
+
+
     def __get_releases(self, continent: str, limit: int = 5):
         """Gets the top new releases
 
@@ -41,14 +65,8 @@ class User:
         List
             A list of dictionaries. Each dictionary contains metadata of 1 new release.
         """
-        df = pd.read_csv("https://raw.githubusercontent.com/lukes/ISO-3166-Countries-with-Regional-Codes/master/all/all.csv")
-        cc_map = defaultdict(list)
-        df = df.reset_index()  # make sure indexes pair with number of rows
 
-        for index, row in df.iterrows():
-            if(row['alpha-2'] == 'AQ'): continue
-            cc_map[row['region']].append(row['alpha-2'])
-
+        cc_map = self.get_map()
         if(limit <= 0):
             raise TypeError('Limit parameter invalid')
         if(continent not in cc_map):
@@ -112,7 +130,6 @@ class User:
         """
 
         all_releases = self.__get_releases(continent, limit)
-
         albums = self.extract_albums(all_releases)
 
         return albums[:limit]
