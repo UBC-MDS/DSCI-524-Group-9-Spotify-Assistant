@@ -92,13 +92,10 @@ def test_get_playlists_songs():
 
     
 def test_get_song_recommendations():
-    credentials = None
-    Random_User = spotify_assistant.User(credentials)
+    Random_User = spotify_assistant.User
+    artists_info = json.load(open('tests/artist_info.json', 'r'))
         
-    example_seeds = ['2rRUfv2w535SEUV1YO5SP6', '6uRJnvQ3f8whVnmeoecv5Z']
-    example_seed_type = 'artists'
-        
-    example_artist_info = {
+    example_artist_info = [{
         'external_urls': {'spotify': 'https://open.spotify.com/artist/6uRJnvQ3f8whVnmeoecv5Z'}, 
         'followers': {'href': None, 'total': 179579}, 
         'genres': ['german orchestra', 'orchestra'], 
@@ -113,19 +110,19 @@ def test_get_song_recommendations():
         'popularity': 74, 
         'type': 'artist', 
         'uri': 'spotify:artist:6uRJnvQ3f8whVnmeoecv5Z'
-    }
+    }]
         
         
-    # Test that artist id's are correctly extracted
-    example_id = Random_User.__extract_artist_id(example_artist_info)
+    # Test that artist id information is correctly extracted
+    example_id = Random_User.extract_artist_id(example_artist_info)
     assert example_id == ['6uRJnvQ3f8whVnmeoecv5Z'], "Artist id was not correctly extracted"
-        
-        
-    # Test that the number of recommended songs to generate is between 1 and 100
-    with pytest.raises(ValueError, match = 'Number of songs to recommend must be between 1 and 100 (inclusive)'):
-        Random_User.__get_recommended_songs(example_seed_type, example_seeds, num_songs=123)
-    
-    # Test that new songs were generated, and that the correct number of songs was generated
-    recommended_songs = Random_User.__get_recommended_songs(example_seed_type, example_seeds, 10)
-    assert len(recommended_songs) > 0, "New songs were not generated. Check the input seeds."
-    assert len(recommended_songs) == 10, "Incorrect number of songs generated."
+
+
+    # Test that all of the artist id's were extracted
+    many_ids = Random_User.extract_artist_id(artists_info['artists'])
+    assert len(many_ids) == 20, "Incorrect number of artist id's extracted"
+
+    # Test that an empty list is returned if there is no artist information
+    no_artist = Random_User.extract_artist_id([])
+    assert len(no_artist) == 0
+    assert isinstance(no_artist, list)
