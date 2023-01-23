@@ -29,14 +29,14 @@ def test_get_new_releases_by_continent():
 
     # Test with invalid continent name
     with pytest.raises(TypeError):
-        RandomUser.get_new_releases_by_continent(continent'="ContinentThatDoesNotExist",limit=5)
+        RandomUser.get_new_releases_by_continent(continent="ContinentThatDoesNotExist",limit=5)
 
     # Test with invalid parameter
     with pytest.raises(TypeError):
-        RandomUser.get_new_releases_by_continent(continent'="Asia", limit=-1)
+        RandomUser.get_new_releases_by_continent(continent="Asia", limit=-1)
 
     # Test if the function returns expected number of outputs
-    data = RandomUser.get_new_releases_by_continent(continent'="Asia", limit=5)
+    data = RandomUser.get_new_releases_by_continent(continent="Asia", limit=5)
     assert len(data) == 5
 
 def test_get_playlists_songs():
