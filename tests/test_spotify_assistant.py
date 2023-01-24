@@ -21,23 +21,34 @@ def test_get_users_top_genres():
     except Exception as e:
         assert isinstance(e, Exception)
 
+
 def test_get_new_releases_by_continent():
 
     # Create a new user
-    artists_info = json.load(open('tests/artist_info.json', 'r'))
-    RandomUser = spotify_assistant.User
+    cc_map = spotify_assistant.User.get_map()
 
-    # Test with invalid continent name
-    with pytest.raises(TypeError, match = 'must be a valid continent name'):
-        RandomUser.get_new_releases_by_continent("ContinentThatDoesNotExist")
+    # Assert that the map is a dict object
+    assert isinstance(cc_map, dict) == True
 
-    # Test with invalid parameter
-    with pytest.raises(TypeError, match = 'must be a valid limit number'):
-        RandomUser.get_new_releases_by_continent("Asia", limit=-1)
+    # Assert the number of continents to be correct
+    assert len(cc_map) == 5
 
-    # Test if the function returns expected number of outputs
-    data = RandomUser.get_new_releases_by_continent("Asia", limit=5)
-    assert len(data) == 5
+    # Assert the number of countires in Asia to be correct
+    assert len(cc_map['Asia']) == 51
+
+    # Assert the number of countires in Europe to be correct
+    assert len(cc_map['Europe']) == 51
+
+    # Assert the number of countires  in Americas to be correct
+    assert len(cc_map['Americas']) == 57
+
+    # Assert the number of countires in Africa to be correct
+    assert len(cc_map['Africa']) == 60
+
+    # Assert the number of countires in Oceania to be correct
+    assert len(cc_map['Oceania']) == 29
+
+
 
 def test_get_playlists_songs():
 
@@ -90,7 +101,7 @@ def test_get_playlists_songs():
     songnames = spotify_assistant.User.format_songs(fake_song_output)
     assert songnames == ['False Knight']
 
-    
+
 def test_get_song_recommendations():
     Random_User = spotify_assistant.User
     artists_info = json.load(open('tests/artist_info.json', 'r'))
@@ -102,13 +113,13 @@ def test_get_song_recommendations():
         'href': 'https://api.spotify.com/v1/artists/6uRJnvQ3f8whVnmeoecv5Z', 
         'id': '6uRJnvQ3f8whVnmeoecv5Z', 
         'images': [
-            {'height': 640, 'url': 'https://i.scdn.co/image/ab6761610000e5eb92e0a1e423bd8590dcd43bda', 'width': 640}, 
-            {'height': 320, 'url': 'https://i.scdn.co/image/ab6761610000517492e0a1e423bd8590dcd43bda', 'width': 320}, 
+            {'height': 640, 'url': 'https://i.scdn.co/image/ab6761610000e5eb92e0a1e423bd8590dcd43bda', 'width': 640},
+            {'height': 320, 'url': 'https://i.scdn.co/image/ab6761610000517492e0a1e423bd8590dcd43bda', 'width': 320},
             {'height': 160, 'url': 'https://i.scdn.co/image/ab6761610000f17892e0a1e423bd8590dcd43bda', 'width': 160}
-        ], 
-        'name': 'Berliner Philharmoniker', 
-        'popularity': 74, 
-        'type': 'artist', 
+        ],
+        'name': 'Berliner Philharmoniker',
+        'popularity': 74,
+        'type': 'artist',
         'uri': 'spotify:artist:6uRJnvQ3f8whVnmeoecv5Z'
     }]
         
