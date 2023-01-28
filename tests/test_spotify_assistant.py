@@ -97,6 +97,13 @@ def test_get_playlists_songs():
     yesMatch = spotify_assistant.User.filter_playlists(fake_playlist_output, playlists=['night drives', 'aaa'])
     assert yesMatch == {'night drives': '4k3qVV6kpEPU8BbPNFExGH'}
 
+    # Test that all playlists are returned when no filter is added
+    allPlaylists = spotify_assistant.User.filter_playlists(fake_playlist_output)
+    assert allPlaylists == {
+        'night drives': '4k3qVV6kpEPU8BbPNFExGH',
+        'boss rush': '2QbimdtcVdsCxocvmIDNgt'
+    }
+
     # Test that function returns proper song names
     songnames = spotify_assistant.User.format_songs(fake_song_output)
     assert songnames == ['False Knight']
