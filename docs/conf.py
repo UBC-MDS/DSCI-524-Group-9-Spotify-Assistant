@@ -15,6 +15,9 @@ author = u"Caroline Tang, Julie Song, Jenit Jain, Chester Wang"
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
+import sys
+sys.path.append('../src/spotify_assistant/')
+
 extensions = [
     "myst_nb",
     "autoapi.extension",
