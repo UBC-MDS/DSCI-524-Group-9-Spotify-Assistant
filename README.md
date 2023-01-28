@@ -20,7 +20,17 @@ $ pip install spotify_assistant
 
 ## Usage
 
-- TODO
+```bash
+import spotify_assistant
+
+credentials = {clientId:'xxxxxxxxxxxx', clientSecret: 'xxxxxxxxxxxx'}
+RandomUser = User(credentials)
+RandomUser.get_song_recommendations("Recommended Songs")
+RandomUser.get_playlists_songs()
+RandomUser.get_users_top_genres()
+spotify_assistant.User.get_new_releases_by_continent("Asia")
+
+```
 
 ## Functions
 
