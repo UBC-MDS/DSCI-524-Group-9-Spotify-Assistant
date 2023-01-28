@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "spotify_assistant"
-version = "0.1.0"
+version = "0.0.2"
 description = "A package that makes spotify users' lives easier!"
 authors = ["Caroline Tang, Julie Song, Jenit Jain, Chester Wang"]
 license = "MIT"
@@ -23,7 +23,7 @@ sphinx-rtd-theme = "^1.1.1"
 python-semantic-release = "^7.33.0"
 
 [tool.semantic_release]
-version_variable = "pyproject.toml:__version__"
+version_variable = "pyproject.toml:version"
 version_source = "commit"
 branch = "main"                             # branch to make releases of
 changelog_file = "CHANGELOG.md"             # changelog file
