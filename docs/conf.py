@@ -17,6 +17,7 @@ author = u"Caroline Tang, Julie Song, Jenit Jain, Chester Wang"
 # ones.
 import sys
 sys.path.append('../src/spotify_assistant/')
+sys.path.append('../src/')
 
 extensions = [
     "myst_nb",
