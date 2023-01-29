@@ -2,6 +2,9 @@
 
 <!--next-version-placeholder-->
 
+## v0.1.1 (2023-01-29)
+
+
 ## v0.1.0 (2023-01-29)
 ### Feature
 * Added new test for playlists ([`91b57e3`](https://github.com/UBC-MDS/spotify_assistant/commit/91b57e3eb1df8f76c197dcd417be44ae450494d1))
