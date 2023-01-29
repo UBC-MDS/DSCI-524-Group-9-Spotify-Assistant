@@ -330,6 +330,7 @@ class User:
 
         Playlists from which to retrieve songs can be specified by name as a list,
         but by default all songs from all of a user's owned and followed playlists will be retrieved.
+        Due to access restrictions, non-collaborative, private playlists cannot be retrieved.
 
         Parameters
         ----------
