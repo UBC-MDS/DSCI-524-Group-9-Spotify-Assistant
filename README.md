@@ -1,4 +1,5 @@
 # spotify_assistant
+[![codecov](https://codecov.io/github/UBC-MDS/spotify_assistant/branch/main/graph/badge.svg?token=zXl7YhGrM3)](https://codecov.io/github/UBC-MDS/spotify_assistant)
 
 A Python package that enriches spotify users' music experience by allowing them to explore their listening trends via REST APIs implemented for Spotify developers.
 
