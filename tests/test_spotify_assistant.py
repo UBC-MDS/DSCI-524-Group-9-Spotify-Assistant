@@ -1,10 +1,10 @@
-from spotify_assistant import spotify_assistant
+from spotify_assistant import User
 import pytest
 import json
 
 def test_get_users_top_genres():
     artists_info = json.load(open('tests/artist_info.json', 'r'))
-    RandomUser = spotify_assistant.User
+    RandomUser = User.User
 
     # Test the number of genres returned
     genres = RandomUser.get_top_genres(artists_info['artists'])
@@ -25,7 +25,7 @@ def test_get_users_top_genres():
 def test_get_new_releases_by_continent():
 
     # Create a new user
-    cc_map = spotify_assistant.User.get_map()
+    cc_map = User.User.get_map()
 
     # Assert that the map is a dict object
     assert isinstance(cc_map, dict) == True
@@ -86,31 +86,31 @@ def test_get_playlists_songs():
 
     # Test with invalid playlists argument
     with pytest.raises(TypeError, match = 'must be a list or None'):
-        spotify_assistant.User.filter_playlists(fake_playlist_output, playlists=2)
+        User.User.filter_playlists(fake_playlist_output, playlists=2)
 
     # Test with no playlists matching the list
-    noMatch = spotify_assistant.User.filter_playlists(fake_playlist_output, playlists=['aaa'])
+    noMatch = User.User.filter_playlists(fake_playlist_output, playlists=['aaa'])
     assert isinstance(noMatch, dict)
     assert len(noMatch) == 0
 
     # Test that matching playlists are returned
-    yesMatch = spotify_assistant.User.filter_playlists(fake_playlist_output, playlists=['night drives', 'aaa'])
+    yesMatch = User.User.filter_playlists(fake_playlist_output, playlists=['night drives', 'aaa'])
     assert yesMatch == {'night drives': '4k3qVV6kpEPU8BbPNFExGH'}
 
     # Test that all playlists are returned when no filter is added
-    allPlaylists = spotify_assistant.User.filter_playlists(fake_playlist_output)
+    allPlaylists = User.User.filter_playlists(fake_playlist_output)
     assert allPlaylists == {
         'night drives': '4k3qVV6kpEPU8BbPNFExGH',
         'boss rush': '2QbimdtcVdsCxocvmIDNgt'
     }
 
     # Test that function returns proper song names
-    songnames = spotify_assistant.User.format_songs(fake_song_output)
+    songnames = User.User.format_songs(fake_song_output)
     assert songnames == ['False Knight']
 
 
 def test_get_song_recommendations():
-    Random_User = spotify_assistant.User
+    Random_User = User.User
     artists_info = json.load(open('tests/artist_info.json', 'r'))
         
     example_artist_info = [{
