@@ -18,6 +18,7 @@
         <script src="_static/underscore.js"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -77,14 +78,231 @@
 <p>To use <code class="docutils literal notranslate"><span class="pre">spotify_assistant</span></code> in a project:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">spotify_assistant</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">spotify_assistant.User</span> <span class="kn">import</span> <span class="n">User</span>
+<span class="kn">from</span> <span class="nn">spotify_assistant</span> <span class="kn">import</span> <span class="n">__version__</span>
+<span class="kn">import</span> <span class="nn">json</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="n">spotify_assistant</span><span class="o">.</span><span class="n">__version__</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">__version__</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0.1.0
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>1.0.3
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">credentials</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="s2">&quot;credential.json&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">))</span>
+<span class="n">RandomUser</span> <span class="o">=</span> <span class="n">User</span><span class="p">(</span><span class="n">credentials</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">RandomUser</span><span class="o">.</span><span class="n">get_song_recommendations</span><span class="p">(</span><span class="s2">&quot;Recommended Songs&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Generating recommended songs based on artists...
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Here is a link to the new playlist: https://open.spotify.com/playlist/6LIFqyupxuY5bLvbEfc1HY
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">RandomUser</span><span class="o">.</span><span class="n">get_users_playlists_songs</span><span class="p">([</span><span class="s2">&quot;Workout&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;Workout&#39;: [&#39;m.A.A.d city&#39;,
+  &#39;10 Bands&#39;,
+  &#39;Yes Indeed&#39;,
+  &#39;Walk It Talk It&#39;,
+  &#39;Nonstop&#39;,
+  &#39;Heat Waves&#39;,
+  &#39;R U Mine?&#39;,
+  &#39;p r i d e . i s . t h e . d e v i l (with Lil Baby)&#39;,
+  &#39;Backseat Freestyle&#39;,
+  &#39;Drüg&#39;,
+  &#39;I Am A God&#39;,
+  &#39;Tell It To My Heart&#39;,
+  &#39;a m a r i&#39;,
+  &#39;Fair Trade (with Travis Scott)&#39;,
+  &#39;Black and Yellow&#39;,
+  &#39;Mercy&#39;,
+  &#39;Sweet Emotion&#39;,
+  &#39;We Paid (feat. 42 Dugg)&#39;,
+  &#39;HUMBLE.&#39;,
+  &#39;Look Alive (feat. Drake)&#39;,
+  &#39;Intergalactic - Remastered 2009&#39;,
+  &#39;Purple Lamborghini (with Rick Ross)&#39;,
+  &quot;X Gon&#39; Give It to Ya - Re-Recorded - Orchestral Version&quot;,
+  &#39;Black Skinhead&#39;,
+  &#39;Disco Inferno&#39;,
+  &#39;From The Ritz To The Rubble - Live&#39;,
+  &#39;Bounce Back&#39;,
+  &#39;Final Warning&#39;,
+  &#39;P.I.M.P.&#39;,
+  &#39;Money In The Grave (Drake ft. Rick Ross)&#39;,
+  &#39;FRANCHISE (feat. Future, Young Thug &amp; M.I.A.) - REMIX&#39;,
+  &#39;M&amp;M (with Future feat. Lil Baby)&#39;,
+  &#39;Chill Bill (feat. J. Davi$ &amp; Spooks)&#39;,
+  &#39;Freestyle&#39;,
+  &#39;Freestyle&#39;,
+  &#39;Praise God (Slowed)&#39;,
+  &#39;Super Gremlin&#39;,
+  &#39;Slow Down Love&#39;,
+  &#39;White Walls (feat. ScHoolboy Q &amp; Hollis)&#39;,
+  &#39;No Role Modelz&#39;,
+  &#39;GANGSTER&#39;,
+  &#39;RELENTLESS (feat. Lil Uzi Vert)&#39;,
+  &#39;BUTTERFLY EFFECT&#39;,
+  &#39;SICKO MODE&#39;,
+  &quot;Day &#39;N&#39; Nite (nightmare)&quot;,
+  &#39;Powerglide (feat. Juicy J) - From SR3MM&#39;,
+  &#39;Lucky You (feat. Joyner Lucas)&#39;,
+  &#39;Hello (feat. A Boogie Wit da Hoodie)&#39;,
+  &#39;Wet Dreamz&#39;,
+  &#39;Rap Saved Me (feat. Quavo)&#39;,
+  &#39;A.D.H.D&#39;,
+  &#39;The Real Slim Shady&#39;,
+  &quot;can&#39;t leave without it&quot;,
+  &#39;Till I Collapse&#39;,
+  &#39;Mask Off&#39;,
+  &#39;Chicago Freestyle (feat. Giveon)&#39;,
+  &#39;Runnin&#39;,
+  &#39;We Get High&#39;,
+  &quot;Gangsta&#39;s Paradise&quot;,
+  &#39;Body Head Anthem (feat. Mr. Magic &amp; Choppa)&#39;,
+  &#39;Still D.R.E.&#39;,
+  &#39;Digital Dash&#39;,
+  &#39;Over &amp; Over&#39;,
+  &#39;Faded&#39;,
+  &#39;The Recipe - Bonus Track&#39;,
+  &#39;G.O.M.D&#39;,
+  &#39;a lot&#39;,
+  &#39;Forever&#39;,
+  &#39;Starboy&#39;,
+  &#39;Hypnotize - 2014 Remaster&#39;,
+  &#39;Mob Ties&#39;,
+  &#39;Tokyo Drifting&#39;,
+  &#39;Just A Lil Bit&#39;,
+  &#39;Ramen &amp; OJ&#39;,
+  &#39;BOP&#39;,
+  &#39;Swimming Pools (Drank) - Extended Version&#39;,
+  &#39;Ric Flair Drip (with Metro Boomin)&#39;,
+  &#39;ROOF&#39;,
+  &#39;Lemonade (feat. Gunna, Don Toliver &amp; NAV)&#39;,
+  &#39;Energy&#39;,
+  &#39;Bandit (with YoungBoy Never Broke Again)&#39;,
+  &#39;Virgil&#39;,
+  &#39;Alright&#39;,
+  &#39;MIDDLE CHILD&#39;,
+  &#39;How We Coming&#39;,
+  &#39;Dior&#39;,
+  &#39;CANCELLED (feat. Skepta)&#39;,
+  &#39;I Do This&#39;,
+  &#39;Sum 2 Prove&#39;,
+  &#39;Shotta Flow (feat. Blueface) [Remix]&#39;,
+  &quot;I&#39;m Goin In&quot;,
+  &#39;8 Mile - From &quot;8 Mile&quot; Soundtrack&#39;,
+  &#39;Big Subwoofer (feat. Snoop Dogg, Ice Cube, E-40 &amp; Too $hort ) - Single Version&#39;,
+  &#39;Behind Barz - Bonus&#39;,
+  &#39;King Kunta&#39;,
+  &#39;Shoot to Thrill&#39;,
+  &#39;Welcome To The Jungle&#39;,
+  &#39;Slippery (feat. Gucci Mane)&#39;,
+  &#39;Going Bad (feat. Drake)&#39;,
+  &#39;I Get the Bag (feat. Migos)&#39;,
+  &#39;Plain Jane REMIX (feat. Nicki Minaj)&#39;,
+  &#39;Jigsaw&#39;,
+  &#39;The London (feat. J. Cole &amp; Travis Scott)&#39;,
+  &#39;family ties (with Kendrick Lamar)&#39;,
+  &#39;Everyday (feat. Rod Stewart, Miguel &amp; Mark Ronson)&#39;,
+  &#39;4K&#39;,
+  &#39;Your Heart&#39;,
+  &#39;PRBLMS&#39;,
+  &#39;DNA.&#39;,
+  &#39;Taste (feat. Offset)&#39;,
+  &#39;In Da Club&#39;,
+  &#39;Modern Day&#39;,
+  &#39;Avalanche&#39;,
+  &#39;Clique&#39;,
+  &quot;Can&#39;t Tell Me Nothing&quot;,
+  &#39;Fast Lane&#39;,
+  &#39;Routine (feat. Rick Ross &amp; Meek Mill)&#39;,
+  &#39;Opps (with Yugen Blakrok)&#39;,
+  &#39;PRIDE.&#39;,
+  &#39;KOD&#39;,
+  &#39;BETRAYED&#39;,
+  &#39;Jimmy Cooks (feat. 21 Savage)&#39;,
+  &#39;Sing For The Moment&#39;,
+  &#39;Step Out.&#39;,
+  &#39;Never Recover (Lil Baby &amp; Gunna, Drake)&#39;,
+  &#39;1 Scale (feat. G Herbo)&#39;,
+  &#39;Me Vs Me&#39;,
+  &#39;Pony&#39;,
+  &#39;BACK TO BACK DDosama&#39;,
+  &#39;MIDDLE CHILD&#39;,
+  &#39;Casper&#39;,
+  &#39;Lil Romeo&#39;,
+  &#39;Super Gremlin&#39;,
+  &#39;Ball If I Want To&#39;,
+  &#39;gun smoke&#39;,
+  &#39;Above The Law&#39;,
+  &#39;Ambition For Cash&#39;,
+  &#39;Whole Lot&#39;]}
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">RandomUser</span><span class="o">.</span><span class="n">get_new_releases_by_continent</span><span class="p">(</span><span class="n">continent</span><span class="o">=</span><span class="s2">&quot;Asia&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>HTTP Error for GET to https://api.spotify.com/v1/browse/new-releases with Params: {&#39;country&#39;: &#39;AF&#39;, &#39;limit&#39;: 20, &#39;offset&#39;: 0} returned 400 due to Unlaunched country
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>-- Loading new releases in Asia, this may take a while...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>HTTP Error for GET to https://api.spotify.com/v1/browse/new-releases with Params: {&#39;country&#39;: &#39;CN&#39;, &#39;limit&#39;: 20, &#39;offset&#39;: 0} returned 400 due to Unlaunched country
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>HTTP Error for GET to https://api.spotify.com/v1/browse/new-releases with Params: {&#39;country&#39;: &#39;IR&#39;, &#39;limit&#39;: 20, &#39;offset&#39;: 0} returned 400 due to Unlaunched country
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>HTTP Error for GET to https://api.spotify.com/v1/browse/new-releases with Params: {&#39;country&#39;: &#39;KP&#39;, &#39;limit&#39;: 20, &#39;offset&#39;: 0} returned 400 due to Unlaunched country
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>HTTP Error for GET to https://api.spotify.com/v1/browse/new-releases with Params: {&#39;country&#39;: &#39;MM&#39;, &#39;limit&#39;: 20, &#39;offset&#39;: 0} returned 400 due to Unlaunched country
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>HTTP Error for GET to https://api.spotify.com/v1/browse/new-releases with Params: {&#39;country&#39;: &#39;SY&#39;, &#39;limit&#39;: 20, &#39;offset&#39;: 0} returned 400 due to Unlaunched country
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>HTTP Error for GET to https://api.spotify.com/v1/browse/new-releases with Params: {&#39;country&#39;: &#39;TM&#39;, &#39;limit&#39;: 20, &#39;offset&#39;: 0} returned 400 due to Unlaunched country
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>HTTP Error for GET to https://api.spotify.com/v1/browse/new-releases with Params: {&#39;country&#39;: &#39;YE&#39;, &#39;limit&#39;: 20, &#39;offset&#39;: 0} returned 400 due to Unlaunched country
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&quot;Harry&#39;s House, produced by Harry Styles&quot;,
+ &#39;emotionally unavailable, produced by Cat Burns&#39;,
+ &#39;So Far So Good, produced by The Chainsmokers&#39;,
+ &#39;Dance Fever, produced by Florence + The Machine&#39;,
+ &#39;ESQUEMAS, produced by Becky G&#39;]
 </pre></div>
 </div>
 </div>

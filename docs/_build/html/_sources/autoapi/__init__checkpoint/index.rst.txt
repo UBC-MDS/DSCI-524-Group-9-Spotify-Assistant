@@ -1,0 +1,13 @@
+:py:mod:`__init__-checkpoint`
+=============================
+
+.. py:module:: __init__-checkpoint
+
+
+Module Contents
+---------------
+
+.. py:data:: __version__
+
+   
+

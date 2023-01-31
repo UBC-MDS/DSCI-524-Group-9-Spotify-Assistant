@@ -18,6 +18,7 @@
         <script src="_static/underscore.js"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -73,6 +74,7 @@
              
   <section id="spotify-assistant">
 <h1>spotify_assistant<a class="headerlink" href="#spotify-assistant" title="Permalink to this heading"></a></h1>
+<p><a class="reference external" href="https://codecov.io/github/UBC-MDS/spotify_assistant"><img alt="codecov" src="https://codecov.io/github/UBC-MDS/spotify_assistant/branch/main/graph/badge.svg?token=zXl7YhGrM3" /></a></p>
 <p>A Python package that enriches spotify users’ music experience by allowing them to explore their listening trends via REST APIs implemented for Spotify developers.</p>
 <p>There is one similar Python package, <a class="reference external" href="https://github.com/spotipy-dev/spotipy">Spotipy</a> that provides wrapper functions in Python for the Spotify API. This package contains a function for each possible API request, but does not combine any of these requests. Our aim is to create functions that combine multiple requests and provide additional insights for Spotify users.</p>
 <section id="authors">
@@ -98,7 +100,7 @@
 <span class="nv">credentials</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">{</span>clientId:<span class="s1">&#39;xxxxxxxxxxxx&#39;</span>,<span class="w"> </span>clientSecret:<span class="w"> </span><span class="s1">&#39;xxxxxxxxxxxx&#39;</span><span class="o">}</span>
 <span class="nv">RandomUser</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>User<span class="o">(</span>credentials<span class="o">)</span>
 RandomUser.get_song_recommendations<span class="o">(</span><span class="s2">&quot;Recommended Songs&quot;</span><span class="o">)</span>
-RandomUser.get_playlists_songs<span class="o">()</span>
+RandomUser.get_users_playlists_songs<span class="o">()</span>
 RandomUser.get_users_top_genres<span class="o">()</span>
 spotify_assistant.User.get_new_releases_by_continent<span class="o">(</span><span class="s2">&quot;Asia&quot;</span><span class="o">)</span>
 </pre></div>

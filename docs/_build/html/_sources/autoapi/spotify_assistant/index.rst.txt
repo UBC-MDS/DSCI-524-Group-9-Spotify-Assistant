@@ -10,7 +10,7 @@ Submodules
    :titlesonly:
    :maxdepth: 1
 
-   spotify_assistant/index.rst
+   User/index.rst
 
 
 Package Contents

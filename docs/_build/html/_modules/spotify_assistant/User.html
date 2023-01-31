@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>spotify_assistant.User &mdash; spotify_assistant  documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> spotify_assistant
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../example.html">Example usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../conduct.html">Code of Conduct</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../autoapi/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">spotify_assistant</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">spotify_assistant.User</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for spotify_assistant.User</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">date</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Counter</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">from</span> <span class="nn">spotipy.oauth2</span> <span class="kn">import</span> <span class="n">SpotifyOAuth</span>
+<span class="kn">from</span> <span class="nn">spotipy</span> <span class="kn">import</span> <span class="n">Spotify</span>
+
+<div class="viewcode-block" id="User"><a class="viewcode-back" href="../../autoapi/spotify_assistant/User/index.html#spotify_assistant.User.User">[docs]</a><span class="k">class</span> <span class="nc">User</span><span class="p">:</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_credentials</span><span class="p">):</span>
+
+        <span class="n">scopes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;playlist-read-private&quot;</span><span class="p">,</span>
+                  <span class="s2">&quot;playlist-read-collaborative&quot;</span><span class="p">,</span>
+                  <span class="s2">&quot;playlist-modify-private&quot;</span><span class="p">,</span>
+                  <span class="s2">&quot;user-library-read&quot;</span><span class="p">,</span>
+                  <span class="s2">&quot;user-top-read&quot;</span><span class="p">,</span>
+                  <span class="s2">&quot;playlist-modify-private&quot;</span><span class="p">,</span>
+                  <span class="s2">&quot;playlist-modify-public&quot;</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">sp</span> <span class="o">=</span> <span class="n">Spotify</span><span class="p">(</span>
+            <span class="n">auth_manager</span><span class="o">=</span><span class="n">SpotifyOAuth</span><span class="p">(</span>
+                <span class="n">client_id</span><span class="o">=</span><span class="n">client_credentials</span><span class="p">[</span><span class="s1">&#39;client_id&#39;</span><span class="p">],</span>
+                <span class="n">client_secret</span><span class="o">=</span><span class="n">client_credentials</span><span class="p">[</span><span class="s1">&#39;client_secret&#39;</span><span class="p">],</span>
+                <span class="n">redirect_uri</span><span class="o">=</span><span class="s2">&quot;http://127.0.0.1:8000&quot;</span><span class="p">,</span>
+                <span class="n">scope</span><span class="o">=</span><span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">scopes</span><span class="p">)))</span>
+
+
+<div class="viewcode-block" id="User.get_map"><a class="viewcode-back" href="../../autoapi/spotify_assistant/User/index.html#spotify_assistant.User.User.get_map">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_map</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Gets continent to country map</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        -------</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Dict</span>
+<span class="sd">            A hashmap</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;https://raw.githubusercontent.com/lukes/ISO-3166-Countries-with-Regional-Codes/master/all/all.csv&quot;</span><span class="p">)</span>
+        <span class="n">cc_map</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>  <span class="c1"># make sure indexes pair with number of rows</span>
+
+        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;alpha-2&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;AQ&#39;</span><span class="p">):</span> <span class="k">continue</span>
+            <span class="n">cc_map</span><span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;region&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;alpha-2&#39;</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">cc_map</span></div>
+
+
+    <span class="k">def</span> <span class="nf">__get_releases</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">continent</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Gets the top new releases</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        -------</span>
+<span class="sd">        continent: str</span>
+<span class="sd">            The continent where the new releases were published</span>
+<span class="sd">        limit: int</span>
+<span class="sd">            Number of new releases to return</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        List</span>
+<span class="sd">            A list of dictionaries. Each dictionary contains metadata of 1 new release.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">cc_map</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_map</span><span class="p">()</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">limit</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;Limit parameter invalid&#39;</span><span class="p">)</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">continent</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">cc_map</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;Continent parameter invalid. Check for typos&#39;</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-- Loading new releases in </span><span class="si">{}</span><span class="s2">, this may take a while...&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">continent</span><span class="p">))</span>
+
+        <span class="n">all_releases</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">country_code</span> <span class="ow">in</span> <span class="n">cc_map</span><span class="p">[</span><span class="n">continent</span><span class="p">]:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">new_releases</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sp</span><span class="o">.</span><span class="n">new_releases</span><span class="p">(</span><span class="n">country_code</span><span class="p">)</span>
+                <span class="n">all_releases</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_releases</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+        <span class="k">return</span> <span class="n">all_releases</span>
+
+<div class="viewcode-block" id="User.extract_albums"><a class="viewcode-back" href="../../autoapi/spotify_assistant/User/index.html#spotify_assistant.User.User.extract_albums">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">extract_albums</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">all_releases</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Extracts the album names and the corresponding artists</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        -------</span>
+<span class="sd">        all_releases: list</span>
+<span class="sd">            A list of dictionaries. Each dictionary contains metadata for 1 new release.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        List</span>
+<span class="sd">            A list of dictionaries. Each dictionary contains metadata for 1 new release.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">new_releases</span> <span class="ow">in</span> <span class="n">all_releases</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">new_releases</span><span class="p">[</span><span class="s1">&#39;albums&#39;</span><span class="p">][</span><span class="s1">&#39;items&#39;</span><span class="p">]:</span>
+                <span class="n">album_name</span> <span class="o">=</span> <span class="n">item</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+                <span class="n">artist_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">item</span><span class="p">[</span><span class="s1">&#39;artists&#39;</span><span class="p">]]</span>
+                <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">, produced by </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">album_name</span><span class="p">,</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">artist_list</span><span class="p">)))</span>
+
+        <span class="k">return</span> <span class="n">data</span></div>
+
+<div class="viewcode-block" id="User.get_new_releases_by_continent"><a class="viewcode-back" href="../../autoapi/spotify_assistant/User/index.html#spotify_assistant.User.User.get_new_releases_by_continent">[docs]</a>    <span class="k">def</span> <span class="nf">get_new_releases_by_continent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">continent</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Gets the new releases by continent</span>
+
+<span class="sd">        Usually the style of music from the same continent are similar,</span>
+<span class="sd">        and this helps users find and explore songs similar to their taste.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        continent : str</span>
+<span class="sd">            continent name (i.e. Asia, Europe, Oceania, Americas, Africa)</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        List</span>
+<span class="sd">            A list of titles of new releases in String from the corresponding continent</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; User.get_new_releases_by_continent(&quot;Asia&quot;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">all_releases</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_releases</span><span class="p">(</span><span class="n">continent</span><span class="p">,</span> <span class="n">limit</span><span class="p">)</span>
+        <span class="n">albums</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">extract_albums</span><span class="p">(</span><span class="n">all_releases</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">albums</span><span class="p">[:</span><span class="n">limit</span><span class="p">]</span></div>
+
+
+    <span class="k">def</span> <span class="nf">__get_saved_track</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the user&#39;s saved tracks</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        List</span>
+<span class="sd">            A list of dictionaries. Each dictionary contains metadata of 1 track.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">saved_tracks</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">offset</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="n">tracks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sp</span><span class="o">.</span><span class="n">current_user_saved_tracks</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;items&#39;</span><span class="p">)</span>
+        <span class="k">while</span> <span class="n">tracks</span> <span class="o">!=</span> <span class="p">[]:</span>
+            <span class="n">saved_tracks</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">tracks</span><span class="p">)</span>
+            <span class="n">offset</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">tracks</span><span class="p">)</span>
+            <span class="n">tracks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sp</span><span class="o">.</span><span class="n">current_user_saved_tracks</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                                                       <span class="n">offset</span><span class="o">=</span><span class="n">offset</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;items&#39;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">saved_tracks</span>
+
+    <span class="k">def</span> <span class="nf">__get_artists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">artists</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the metadata of a list of artists</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        artists : list</span>
+<span class="sd">            list of artist IDs (strings)</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        List</span>
+<span class="sd">            A list of dictionaries. Each dictionary contains metadata of 1 artist.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">artist_information</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">artist_id</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">artists</span><span class="p">):</span>
+            <span class="n">artist_information</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sp</span><span class="o">.</span><span class="n">artist</span><span class="p">(</span><span class="n">artist_id</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">artist_information</span>
+
+<div class="viewcode-block" id="User.get_top_genres"><a class="viewcode-back" href="../../autoapi/spotify_assistant/User/index.html#spotify_assistant.User.User.get_top_genres">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_top_genres</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">artist_information</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the most commonly occuring genres among different artists</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        artist_information : list</span>
+<span class="sd">            list of dictionaries containing artist metadata</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        List</span>
+<span class="sd">            A list of most common genres</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">genre_count</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">artist_info</span> <span class="ow">in</span> <span class="n">artist_information</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s1">&#39;genres&#39;</span> <span class="ow">in</span> <span class="n">artist_info</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">genre</span> <span class="ow">in</span> <span class="n">artist_info</span><span class="p">[</span><span class="s1">&#39;genres&#39;</span><span class="p">]:</span>
+                    <span class="n">genre_count</span><span class="p">[</span><span class="n">genre</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="n">genres</span> <span class="o">=</span> <span class="p">[</span><span class="n">genre</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">genre</span> <span class="ow">in</span> <span class="n">genre_count</span><span class="o">.</span><span class="n">most_common</span><span class="p">(</span><span class="mi">5</span><span class="p">)]</span>
+
+        <span class="k">return</span> <span class="n">genres</span></div>
+
+<div class="viewcode-block" id="User.get_users_top_genres"><a class="viewcode-back" href="../../autoapi/spotify_assistant/User/index.html#spotify_assistant.User.User.get_users_top_genres">[docs]</a>    <span class="k">def</span> <span class="nf">get_users_top_genres</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Finds the top 5 genres from a user&#39;s saved tracks</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        List</span>
+<span class="sd">            A list of the top 5 genres that a user likes</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; credentials = {}</span>
+<span class="sd">        &gt;&gt;&gt; RandomUser = User(credentials)</span>
+<span class="sd">        &gt;&gt;&gt; RandomUser.get_users_top_genres()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">artists</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
+        <span class="c1"># Get user&#39;s saved tracks</span>
+        <span class="n">saved_tracks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_saved_track</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="n">saved_tracks</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">artist</span> <span class="ow">in</span> <span class="n">track</span><span class="p">[</span><span class="s1">&#39;track&#39;</span><span class="p">][</span><span class="s1">&#39;artists&#39;</span><span class="p">]:</span>
+                <span class="n">artists</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">artist</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">])</span>
+
+        <span class="c1"># Get information on all artists</span>
+        <span class="n">artist_information</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_artists</span><span class="p">(</span><span class="n">artists</span><span class="p">)</span>
+
+        <span class="c1">#The driver function</span>
+        <span class="n">genres</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_top_genres</span><span class="p">(</span><span class="n">artist_information</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">genres</span></div>
+
+    <span class="k">def</span> <span class="nf">__get_all_playlists</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calls the spotify api and returns the current user&#39;s saved/owned playlists</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        list</span>
+<span class="sd">            A list of spotify responses containing information about a user&#39;s playlists</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">all_playlists</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">offset</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">user_playlists</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sp</span><span class="o">.</span><span class="n">current_user_playlists</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;items&#39;</span><span class="p">)</span>
+        <span class="k">while</span> <span class="n">user_playlists</span> <span class="o">!=</span> <span class="p">[]:</span>
+            <span class="n">all_playlists</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">user_playlists</span><span class="p">)</span>
+            <span class="n">offset</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">user_playlists</span><span class="p">)</span>
+            <span class="n">user_playlists</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sp</span><span class="o">.</span><span class="n">current_user_playlists</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="n">offset</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;items&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">all_playlists</span>
+
+<div class="viewcode-block" id="User.filter_playlists"><a class="viewcode-back" href="../../autoapi/spotify_assistant/User/index.html#spotify_assistant.User.User.filter_playlists">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">filter_playlists</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">playlist_response</span><span class="p">,</span> <span class="n">playlists</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Filters a spotify playlist response for specified playlists</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        playlist_response : list</span>
+<span class="sd">            list of spotify responses containing information about playlists</span>
+<span class="sd">        playlists : list</span>
+<span class="sd">            list of playlist names (strings) to get songs from, defaults to all</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        dict</span>
+<span class="sd">            A dictionary with the names of playlists as keys,</span>
+<span class="sd">            and the playlist id as the value</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># check valid playlists argument</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">playlists</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">playlists</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;playlists must be a list or None&#39;</span><span class="p">)</span>
+
+        <span class="n">filtered_playlists</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c1"># create dictionary where each key is a playlist name</span>
+        <span class="k">for</span> <span class="n">response</span> <span class="ow">in</span> <span class="n">playlist_response</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">playlists</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">response</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">playlists</span><span class="p">:</span>
+                    <span class="n">filtered_playlists</span><span class="p">[</span><span class="n">response</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">continue</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">filtered_playlists</span><span class="p">[</span><span class="n">response</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">filtered_playlists</span></div>
+
+    <span class="k">def</span> <span class="nf">__get_one_playlists_songs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">playlist_id</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calls the spotify api and returns the all the songs in a playlist</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        list</span>
+<span class="sd">            A list of spotify responses containing all the songs in a playlist</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">all_songs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">offset</span><span class="o">=</span><span class="mi">0</span>
+        <span class="n">playlist_songs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sp</span><span class="o">.</span><span class="n">playlist_items</span><span class="p">(</span><span class="n">playlist_id</span><span class="o">=</span><span class="n">playlist_id</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;items&#39;</span><span class="p">)</span>
+
+        <span class="k">while</span> <span class="n">playlist_songs</span> <span class="o">!=</span> <span class="p">[]:</span>
+            <span class="n">all_songs</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">playlist_songs</span><span class="p">)</span>
+            <span class="n">offset</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">playlist_songs</span><span class="p">)</span>
+            <span class="n">playlist_songs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sp</span><span class="o">.</span><span class="n">playlist_items</span><span class="p">(</span>
+                <span class="n">playlist_id</span><span class="o">=</span><span class="n">playlist_id</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="n">offset</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;items&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">all_songs</span>
+
+<div class="viewcode-block" id="User.format_songs"><a class="viewcode-back" href="../../autoapi/spotify_assistant/User/index.html#spotify_assistant.User.User.format_songs">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">format_songs</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">song_response</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Formats a spotify response into just song names</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        playlist_response : list</span>
+<span class="sd">            list of spotify responses containing information about playlists</span>
+<span class="sd">        playlists : list</span>
+<span class="sd">            list of playlist names (strings) to get songs from, defaults to all</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        dict</span>
+<span class="sd">            A dictionary with the names of playlists as keys,</span>
+<span class="sd">            and the playlist id as the value</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">song_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">song</span> <span class="ow">in</span> <span class="n">song_response</span><span class="p">:</span>
+            <span class="n">song_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">song</span><span class="p">[</span><span class="s1">&#39;track&#39;</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">song_list</span></div>
+
+<div class="viewcode-block" id="User.get_users_playlists_songs"><a class="viewcode-back" href="../../autoapi/spotify_assistant/User/index.html#spotify_assistant.User.User.get_users_playlists_songs">[docs]</a>    <span class="k">def</span> <span class="nf">get_users_playlists_songs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">playlists</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Gets all of the song titles within a user&#39;s owned and followed playlists</span>
+
+<span class="sd">        Playlists from which to retrieve songs can be specified by name as a list,</span>
+<span class="sd">        but by default all songs from all of a user&#39;s owned and followed playlists will be retrieved.</span>
+<span class="sd">        Due to access restrictions, non-collaborative, private playlists cannot be retrieved.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        playlists : list</span>
+<span class="sd">            list of playlist names (strings) to get songs from, defaults to all</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        dict</span>
+<span class="sd">            A dictionary with the names of playlists as keys,</span>
+<span class="sd">            and a list of song titles contained in the playlist as values</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; credentials = {}</span>
+<span class="sd">        &gt;&gt;&gt; Caroline = User(credentials)</span>
+<span class="sd">        &gt;&gt;&gt; Caroline.get_playlists_songs()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">playlists_output</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c1"># request a user&#39;s playlists</span>
+        <span class="n">all_playlists</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_all_playlists</span><span class="p">()</span>
+        <span class="n">filtered_playlists</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter_playlists</span><span class="p">(</span><span class="n">all_playlists</span><span class="p">,</span> <span class="n">playlists</span><span class="p">)</span>
+
+        <span class="c1"># return empty dictionary if no playlists were added</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">filtered_playlists</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;No playlists were found&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">playlists_output</span>
+
+        <span class="c1"># get songs from each playlist</span>
+        <span class="k">for</span> <span class="n">playlist</span> <span class="ow">in</span> <span class="n">filtered_playlists</span><span class="p">:</span>
+            <span class="n">all_songs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_one_playlists_songs</span><span class="p">(</span><span class="n">playlist_id</span> <span class="o">=</span> <span class="n">filtered_playlists</span><span class="p">[</span><span class="n">playlist</span><span class="p">])</span>
+            <span class="n">playlists_output</span><span class="p">[</span><span class="n">playlist</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_songs</span><span class="p">(</span><span class="n">all_songs</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">playlists_output</span></div>
+
+
+
+    <span class="k">def</span> <span class="nf">__get_top_artists</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the current user&#39;s top artists from Spotify.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        list</span>
+<span class="sd">            A list of artist information.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">user_artists</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sp</span><span class="o">.</span><span class="n">current_user_top_artists</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">time_range</span><span class="o">=</span><span class="s1">&#39;short_term&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;items&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">user_artists</span>
+
+<div class="viewcode-block" id="User.extract_artist_id"><a class="viewcode-back" href="../../autoapi/spotify_assistant/User/index.html#spotify_assistant.User.User.extract_artist_id">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">extract_artist_id</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">artists</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Extracts Returns the current user&#39;s top artists from Spotify.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        artists : list</span>
+<span class="sd">            A list of artist information (name, ID, etc.).</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        list</span>
+<span class="sd">            A list of artist id&#39;s.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">top_artists</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">artists</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">response</span> <span class="ow">in</span> <span class="n">artists</span><span class="p">:</span>
+
+                <span class="n">top_artists</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">response</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">])</span>
+
+            <span class="n">top_artists</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">top_artists</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">top_artists</span></div>
+
+    <span class="k">def</span> <span class="nf">__get_genre_seeds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns 5 genre seeds from Spotify.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        list</span>
+<span class="sd">            A list of genre seeds.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">all_genres</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sp</span><span class="o">.</span><span class="n">recommendation_genre_seeds</span><span class="p">()[</span><span class="s1">&#39;genres&#39;</span><span class="p">]</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">all_genres</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">all_genres</span><span class="p">[:</span><span class="mi">5</span><span class="p">]</span>
+    
+<div class="viewcode-block" id="User.get_recommended_songs"><a class="viewcode-back" href="../../autoapi/spotify_assistant/User/index.html#spotify_assistant.User.User.get_recommended_songs">[docs]</a>    <span class="k">def</span> <span class="nf">get_recommended_songs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seed_type</span><span class="p">,</span> <span class="n">seeds</span><span class="p">,</span> <span class="n">num_songs</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a specified number of recommended songs from Spotify.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        seed_type : str</span>
+<span class="sd">            Either &#39;artists&#39; or &#39;genres&#39;. Default is &#39;artists&#39;.</span>
+
+<span class="sd">        seeds: list</span>
+<span class="sd">            A list of artist or track ID&#39;s.</span>
+
+<span class="sd">        num_songs: int</span>
+<span class="sd">            The number of recommended songs to return.</span>
+<span class="sd">            Must be between 1 and 100 (inclusive).</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        list</span>
+<span class="sd">            A list of track uri&#39;s for identifying specific tracks.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">new_songs</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="mi">0</span> <span class="o">&lt;</span> <span class="n">num_songs</span> <span class="o">&lt;=</span> <span class="mi">100</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Number of songs to recommend must be between 1 and 100 (inclusive)&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">seed_type</span> <span class="o">==</span> <span class="s1">&#39;artists&#39;</span><span class="p">:</span>
+            <span class="n">rec_songs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sp</span><span class="o">.</span><span class="n">recommendations</span><span class="p">(</span><span class="n">seed_artists</span><span class="o">=</span><span class="n">seeds</span><span class="p">,</span>
+                                                <span class="n">limit</span><span class="o">=</span><span class="n">num_songs</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">rec_songs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sp</span><span class="o">.</span><span class="n">recommendations</span><span class="p">(</span><span class="n">seed_genres</span><span class="o">=</span><span class="n">seeds</span><span class="p">,</span>
+                                                <span class="n">limit</span><span class="o">=</span><span class="n">num_songs</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="n">rec_songs</span><span class="p">[</span><span class="s1">&#39;tracks&#39;</span><span class="p">]:</span>
+            <span class="n">new_songs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">track</span><span class="p">[</span><span class="s1">&#39;uri&#39;</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">new_songs</span></div>
+
+
+    <span class="k">def</span> <span class="nf">__create_playlist</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">playlist_name</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a new, empty playlist for the user on Spotify.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        playlist_name: str</span>
+<span class="sd">            The name of the new playlist.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        (str, str)</span>
+<span class="sd">            A tuple containing the url and playlist id for the new playlist.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">playlist_name</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">playlist_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="s1">&#39;today&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">date</span><span class="p">()</span><span class="si">}</span><span class="s2"> Recommended Songs&quot;</span>
+
+        <span class="n">new_playlist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sp</span><span class="o">.</span><span class="n">user_playlist_create</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sp</span><span class="o">.</span><span class="n">current_user</span><span class="p">()[</span><span class="s1">&#39;id&#39;</span><span class="p">],</span> <span class="n">playlist_name</span><span class="p">)</span>
+
+        <span class="n">playlist_url</span> <span class="o">=</span> <span class="n">new_playlist</span><span class="p">[</span><span class="s1">&#39;external_urls&#39;</span><span class="p">][</span><span class="s1">&#39;spotify&#39;</span><span class="p">]</span>
+        <span class="n">playlist_id</span> <span class="o">=</span> <span class="n">new_playlist</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="p">(</span><span class="n">playlist_url</span><span class="p">,</span> <span class="n">playlist_id</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__add_songs_to_playlist</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">playlist_id</span><span class="p">,</span> <span class="n">new_songs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Adds songs to a specified user playlist on Spotify.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        playlist_id: str</span>
+<span class="sd">            The id of the new playlist.</span>
+
+<span class="sd">        new_songs: list</span>
+<span class="sd">            List of track ID&#39;s corresponding to songs to add to the playlist.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sp</span><span class="o">.</span><span class="n">playlist_add_items</span><span class="p">(</span><span class="n">playlist_id</span><span class="o">=</span><span class="n">playlist_id</span><span class="p">,</span> <span class="n">items</span> <span class="o">=</span> <span class="n">new_songs</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="User.get_song_recommendations"><a class="viewcode-back" href="../../autoapi/spotify_assistant/User/index.html#spotify_assistant.User.User.get_song_recommendations">[docs]</a>    <span class="k">def</span> <span class="nf">get_song_recommendations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">playlist_name</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">num_songs</span> <span class="o">=</span> <span class="mi">10</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a playlist containing recommended songs based on the user&#39;s top 3 artists.</span>
+<span class="sd">        If there are not yet any top artists for the user&#39;s account,</span>
+<span class="sd">        use genres instead.</span>
+
+<span class="sd">        Prints a url link to the new playlist on Spotify.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        playlist_name : str</span>
+<span class="sd">            The name of the newly created playlist. Defaults to &#39;Recommended Songs&#39;</span>
+<span class="sd">            with the current date (i.e. &quot;2023-01-14 Recommended Songs&quot;).</span>
+
+<span class="sd">        num_songs : int</span>
+<span class="sd">            The number of songs to recommend. Must be between 1 and 100 (inclusive).</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; credentials = {}</span>
+<span class="sd">        &gt;&gt;&gt; RandomUser = User(credentials)</span>
+<span class="sd">        &gt;&gt;&gt; RandomUser.get_song_recommendations(&quot;Recommended Songs&quot;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">artist_info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_top_artists</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">artist_info</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">seed_type</span> <span class="o">=</span> <span class="s1">&#39;artists&#39;</span>
+            <span class="n">seeds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">extract_artist_id</span><span class="p">(</span><span class="n">artist_info</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">seed_type</span> <span class="o">=</span> <span class="s1">&#39;genres&#39;</span>
+            <span class="n">seeds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_genre_seeds</span><span class="p">()</span>
+  
+        <span class="n">recommended_songs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_recommended_songs</span><span class="p">(</span><span class="n">seed_type</span><span class="p">,</span> <span class="n">seeds</span><span class="p">,</span> <span class="n">num_songs</span><span class="p">)</span>
+        
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Generating recommended songs based on </span><span class="si">{</span><span class="n">seed_type</span><span class="si">}</span><span class="s2">...&quot;</span><span class="p">)</span>
+
+        <span class="n">playlist_url</span><span class="p">,</span> <span class="n">playlist_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__create_playlist</span><span class="p">(</span><span class="n">playlist_name</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__add_songs_to_playlist</span><span class="p">(</span><span class="n">playlist_id</span><span class="p">,</span> <span class="n">recommended_songs</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Here is a link to the new playlist: </span><span class="si">{</span><span class="n">playlist_url</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Caroline Tang, Julie Song, Jenit Jain, Chester Wang.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
