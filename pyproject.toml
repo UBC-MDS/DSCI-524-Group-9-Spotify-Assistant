@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "spotify_assistant"
-version = "1.0.4"
+version = "1.0.5"
 description = "A package that makes spotify users' lives easier!"
 authors = ["Caroline Tang, Julie Song, Jenit Jain, Chester Wang"]
 license = "MIT"
